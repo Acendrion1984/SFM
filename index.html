@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Prüfmittelüberwachung · Vorfälle & Themen · Multi-User · GitHub Sync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --border-color: #cbd5e1;
+            --card-bg: #ffffff;
+            --header-gradient: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
+            --shadow-color: rgba(0,51,102,0.2);
+            --input-bg: #ffffff;
+            --hover-bg: #f1f5f9;
+            --btn-primary: #003366;
+            --btn-primary-hover: #002244;
+            --btn-success: #059669;
+            --btn-success-hover: #047857;
+            --btn-danger: #dc2626;
+            --btn-danger-hover: #b91c1c;
+            --btn-warning: #d97706;
+            --btn-warning-hover: #b45309;
+            --btn-reopen: #4f46e5;
+            --btn-reopen-hover: #4338ca;
+            --btn-add: #8b5cf6;
+            --btn-add-hover: #7c3aed;
+            --badge-category-bg: #dbeafe;
+            --badge-method-bg: #ede9fe;
+            --badge-open-bg: #bbf7d0;
+            --badge-closed-bg: #fecaca;
+            --badge-long-bg: #dbeafe;
+            --badge-short-bg: #fef3c7;
+            --badge-audit-bg: #fbcfe8;
+            --text-on-badge: #0f172a;
+            --kw-group-bg: #e2e8f0;
+            --tab-hover: #e2e8f0;
+            --user-tab-1: #e3f2fd;
+            --user-tab-2: #f3e5f5;
+            --user-tab-3: #e8f5e8;
+            --user-tab-4: #fff3e0;
+            --user-tab-5: #ffe0e0;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --border-color: #4a4a4a;
+            --card-bg: #2a2a2a;
+            --header-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            --shadow-color: rgba(0,0,0,0.5);
+            --input-bg: #2d2d2d;
+            --hover-bg: #374151;
+            --btn-primary: #3b82f6;
+            --btn-primary-hover: #2563eb;
+            --btn-success: #10b981;
+            --btn-success-hover: #059669;
+            --btn-danger: #ef4444;
+            --btn-danger-hover: #dc2626;
+            --btn-warning: #f59e0b;
+            --btn-warning-hover: #d97706;
+            --btn-reopen: #6366f1;
+            --btn-reopen-hover: #4f46e5;
+            --btn-add: #a78bfa;
+            --btn-add-hover: #8b5cf6;
+            --badge-category-bg: #1e3a8a;
+            --badge-method-bg: #5b21b6;
+            --badge-open-bg: #065f46;
+            --badge-closed-bg: #991b1b;
+            --badge-long-bg: #1e3a8a;
+            --badge-short-bg: #92400e;
+            --badge-audit-bg: #9d174d;
+            --text-on-badge: #ffffff;
+            --kw-group-bg: #2d3748;
+            --tab-hover: #2d2d2d;
+            --user-tab-1: #1a237e;
+            --user-tab-2: #4a148c;
+            --user-tab-3: #1b5e20;
+            --user-tab-4: #bf360c;
+            --user-tab-5: #b71c1c;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .app-container { max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        .theme-toggle {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            background: var(--bg-secondary); border: 2px solid var(--border-color);
+            border-radius: 50px; padding: 12px; cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow-color); display: flex;
+            align-items: center; justify-content: center; transition: all 0.3s;
+            width: 50px; height: 50px;
+        }
+        .theme-toggle:hover { transform: scale(1.1); }
+        .theme-toggle i { font-size: 24px; color: var(--text-primary); }
+
+        .app-header {
+            background: var(--header-gradient); color: white; padding: 25px;
+            border-radius: 20px 20px 0 0; box-shadow: 0 4px 20px var(--shadow-color);
+        }
+        .app-header h1 { font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .app-header h1 i { font-size: 28px; }
+        .app-header .subtitle { margin-top: 8px; opacity: 0.9; font-size: 15px; }
+
+        .github-bar {
+            background: var(--kw-group-bg); padding: 15px 20px; border-radius: 12px;
+            margin: 20px 0; display: flex; align-items: center; gap: 15px;
+            flex-wrap: wrap; border: 2px solid var(--border-color);
+        }
+        .github-status { display: flex; align-items: center; gap: 10px; color: var(--text-primary); flex: 1; }
+        .github-status i { font-size: 20px; }
+        .github-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn-github {
+            background: #24292e; color: white; border: none;
+            padding: 10px 20px; font-size: 14px; border-radius: 8px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px; font-weight: 600;
+        }
+        .btn-github:hover { background: #2c3e50; }
+        .btn-github-success { background: var(--btn-success); }
+        .btn-github-success:hover { background: var(--btn-success-hover); }
+        .btn-github-warning { background: var(--btn-warning); }
+        .btn-github-warning:hover { background: var(--btn-warning-hover); }
+
+        .file-info-bar {
+            background: var(--kw-group-bg); padding: 15px 20px; border-radius: 12px;
+            margin: 20px 0; display: flex; align-items: center; gap: 15px;
+            flex-wrap: wrap; border: 2px solid var(--border-color);
+        }
+        .file-info { display: flex; align-items: center; gap: 10px; color: var(--text-primary); }
+        .file-info i { color: var(--btn-primary); font-size: 20px; }
+        .file-actions { display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+
+        .btn-file {
+            background: var(--btn-primary); color: white; border: none;
+            padding: 10px 20px; font-size: 14px; border-radius: 8px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px; font-weight: 600;
+        }
+        .btn-file:hover { background: var(--btn-primary-hover); }
+        .btn-file-success { background: var(--btn-success); }
+        .btn-file-success:hover { background: var(--btn-success-hover); }
+        .btn-file-warning { background: var(--btn-warning); }
+        .btn-file-warning:hover { background: var(--btn-warning-hover); }
+
+        .main-tab-navigation {
+            display: flex; gap: 5px; padding: 0 20px; background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border-color); overflow-x: auto;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none; white-space: nowrap; align-items: center;
+        }
+        .main-tab-navigation::-webkit-scrollbar { display: none; }
+
+        .main-tab-button {
+            padding: 15px 25px; background: none; border: none; font-size: 16px;
+            font-weight: 600; color: var(--text-secondary); cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+            border-bottom: 3px solid transparent; transition: all 0.2s; flex-shrink: 0;
+        }
+        .main-tab-button:hover { color: var(--text-primary); background: var(--tab-hover); }
+        .main-tab-button.active { color: var(--btn-primary); border-bottom-color: var(--btn-primary); }
+        .main-tab-button.user-tab { border-radius: 8px 8px 0 0; margin: 0 2px; }
+
+        .add-tab-button {
+            padding: 12px 20px; background: var(--btn-add); color: white; border: none;
+            border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px; margin-left: 10px; flex-shrink: 0;
+        }
+        .add-tab-button:hover { background: var(--btn-add-hover); }
+
+        .main-tab-content {
+            display: none; background: var(--bg-secondary); border-radius: 0 0 20px 20px;
+            box-shadow: 0 10px 30px var(--shadow-color); padding: 30px;
+        }
+        .main-tab-content.active { display: block; }
+
+        .sub-tab-navigation {
+            display: flex; gap: 10px; margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color); align-items: center; flex-wrap: wrap;
+        }
+        .sub-tab-button {
+            padding: 12px 20px; background: none; border: none; font-size: 15px;
+            font-weight: 600; color: var(--text-secondary); cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+            border-bottom: 3px solid transparent; transition: all 0.2s;
+        }
+        .sub-tab-button.active { color: var(--btn-primary); border-bottom-color: var(--btn-primary); }
+        .sub-tab-button:hover { color: var(--text-primary); }
+
+        .sub-tab-content { display: none; }
+        .sub-tab-content.active { display: block; }
+
+        .tab-user-header {
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            background: var(--hover-bg); border-radius: 12px; margin-bottom: 20px;
+        }
+        .user-avatar {
+            width: 50px; height: 50px; border-radius: 50%; background: var(--btn-primary);
+            display: flex; align-items: center; justify-content: center; color: white;
+            font-size: 20px; font-weight: bold;
+        }
+        .user-info { flex: 1; }
+        .user-name { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+        .user-file { font-size: 14px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .lock-status {
+            display: flex; align-items: center; gap: 5px; font-size: 13px;
+            padding: 4px 10px; border-radius: 20px;
+        }
+        .lock-status.editable { background: var(--badge-open-bg); color: var(--text-on-badge); }
+        .lock-status.readonly { background: var(--badge-closed-bg); color: var(--text-on-badge); }
+
+        .form-section {
+            background: var(--hover-bg); border-radius: 16px; padding: 25px; margin-bottom: 25px;
+            border: 2px solid var(--border-color);
+        }
+        .form-section h3 { font-size: 18px; color: var(--btn-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .form-row { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
+        .form-group { flex: 1 1 calc(50% - 10px); min-width: 250px; margin-bottom: 16px; }
+        .form-group.full-width { flex: 0 0 100%; width: 100%; }
+
+        label {
+            display: block; margin-bottom: 8px; color: var(--text-primary);
+            font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        label i { margin-right: 6px; color: var(--btn-primary); font-size: 14px; }
+
+        input, select, textarea {
+            width: 100%; padding: 14px; border: 2px solid var(--border-color);
+            border-radius: 12px; font-size: 16px; transition: all 0.2s;
+            background: var(--input-bg); color: var(--text-primary); font-family: inherit;
+            -webkit-appearance: none; appearance: none;
+        }
+        input:disabled, select:disabled, textarea:disabled { opacity: 0.6; cursor: not-allowed; background: var(--hover-bg); }
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 16px center;
+            background-size: 18px; padding-right: 45px;
+        }
+        [data-theme="dark"] select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--btn-primary);
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.3);
+        }
+        textarea { resize: vertical; min-height: 120px; }
+
+        .btn {
+            padding: 14px 25px; border: none; border-radius: 12px; font-size: 16px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            background: var(--bg-secondary); border: 2px solid var(--border-color);
+            width: 100%; -webkit-tap-highlight-color: transparent; color: var(--text-primary);
+        }
+        .btn-primary { background: var(--btn-primary); color: white; border: none; }
+        .btn-primary:hover { background: var(--btn-primary-hover); }
+        .btn-success { background: var(--btn-success); color: white; border: none; }
+        .btn-success:hover { background: var(--btn-success-hover); }
+        .btn-warning { background: var(--btn-warning); color: white; border: none; }
+        .btn-warning:hover { background: var(--btn-warning-hover); }
+        .btn-danger { background: var(--btn-danger); color: white; border: none; }
+        .btn-danger:hover { background: var(--btn-danger-hover); }
+        .btn-reopen { background: var(--btn-reopen); color: white; border: none; }
+        .btn-reopen:hover { background: var(--btn-reopen-hover); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-upload {
+            background: var(--hover-bg); border: 2px dashed var(--border-color);
+            justify-content: center; color: var(--text-primary); padding: 20px;
+        }
+        .btn-upload:hover { background: var(--bg-secondary); }
+
+        .form-actions { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+        .form-actions .btn { flex: 1; min-width: 150px; }
+
+        .image-preview-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px; margin-top: 15px;
+        }
+        .image-preview-item {
+            position: relative; border-radius: 10px; overflow: hidden;
+            aspect-ratio: 1; background: var(--hover-bg); border: 2px solid var(--border-color);
+        }
+        .image-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+        .image-preview-item .remove-image {
+            position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7);
+            border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; color: white;
+            font-weight: bold; font-size: 18px; padding: 0; line-height: 1;
+        }
+
+        .incident-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 20px; }
+        .incident-card {
+            background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px;
+            padding: 20px; transition: all 0.2s;
+        }
+        .incident-card:hover { border-color: var(--btn-primary); transform: translateY(-2px); box-shadow: 0 10px 25px var(--shadow-color); }
+
+        .card-header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .card-badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .badge {
+            padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 5px; color: var(--text-on-badge);
+        }
+        .badge-category { background: var(--badge-category-bg); }
+        .badge-method { background: var(--badge-method-bg); }
+        .badge-status { background: var(--badge-open-bg); }
+        .badge-status.closed { background: var(--badge-closed-bg); }
+        .badge-long { background: var(--badge-long-bg); }
+        .badge-short { background: var(--badge-short-bg); }
+        .badge-audit { background: var(--badge-audit-bg); }
+        .card-date { font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
+
+        .card-content { margin-bottom: 15px; cursor: pointer; }
+        .info-row { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; margin-bottom: 8px; flex-wrap: wrap; }
+        .info-label { font-weight: 600; color: var(--text-secondary); min-width: 100px; font-size: 14px; }
+        .info-value { color: var(--text-primary); flex: 1; font-size: 14px; white-space: pre-line; }
+
+        .card-actions {
+            display: flex; gap: 8px; margin-top: 15px; padding-top: 15px;
+            border-top: 1px solid var(--border-color); flex-wrap: wrap;
+        }
+        .action-button {
+            flex: 1; min-width: 70px; padding: 10px 8px; border: none; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;
+        }
+        .action-button.view { background: var(--hover-bg); color: var(--text-primary); }
+        .action-button.edit { background: var(--btn-warning); color: white; }
+        .action-button.close-btn { background: var(--btn-success); color: white; }
+        .action-button.reopen { background: var(--btn-reopen); color: white; }
+        .action-button.delete { background: var(--btn-danger); color: white; }
+        .action-button:hover { opacity: 0.9; transform: scale(0.98); }
+
+        .progress-bar { height: 10px; background: var(--border-color); border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; background: var(--btn-primary); border-radius: 10px; transition: width 0.3s; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center;
+            align-items: center; padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-secondary); border-radius: 24px; max-width: 900px;
+            width: 100%; max-height: 92vh; overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            padding: 25px; border-bottom: 2px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; background: var(--bg-secondary); z-index: 10;
+        }
+        .modal-header h2 { font-size: 22px; color: var(--text-primary); }
+        .close-modal { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-secondary); padding: 5px 15px; }
+        .close-modal:hover { color: var(--btn-primary); }
+        .modal-body { padding: 25px; }
+        .modal-footer {
+            padding: 25px; border-top: 2px solid var(--border-color); display: flex;
+            gap: 15px; position: sticky; bottom: 0; background: var(--bg-secondary); flex-wrap: wrap;
+        }
+        .modal-footer .btn { flex: 1; min-width: 120px; }
+
+        .detail-section { margin-bottom: 25px; }
+        .detail-section h3 { font-size: 18px; color: var(--btn-primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+        .detail-item { background: var(--hover-bg); padding: 15px; border-radius: 12px; }
+        .detail-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; }
+        .detail-value { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+
+        .image-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 15px; }
+        .gallery-image { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; cursor: pointer; border: 2px solid var(--border-color); }
+
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8); display: none; justify-content: center;
+            align-items: center; z-index: 2000;
+        }
+        .loading-spinner {
+            width: 50px; height: 50px; border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--btn-primary); border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .success-message, .error-message {
+            padding: 15px 20px; border-radius: 12px; margin-bottom: 20px;
+            display: none; align-items: center; gap: 12px; font-size: 16px; font-weight: 500;
+            position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;
+        }
+        .success-message { background: var(--btn-success); color: white; display: flex; }
+        .error-message { background: var(--btn-danger); color: white; display: flex; }
+
+        .empty-state { text-align: center; padding: 60px; color: var(--text-secondary); }
+        .empty-state i { font-size: 64px; margin-bottom: 20px; display: block; }
+
+        .filter-section { display: flex; flex-direction: row; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .search-box {
+            flex: 2; min-width: 250px; display: flex; align-items: center;
+            background: var(--input-bg); border: 2px solid var(--border-color); border-radius: 12px; padding: 0 16px;
+        }
+        .search-box i { color: var(--text-secondary); }
+        .search-box input { border: none; padding: 14px 10px; width: 100%; outline: none; font-size: 16px; background: transparent; color: var(--text-primary); }
+        .filter-select {
+            flex: 1; min-width: 180px; padding: 14px 45px 14px 14px; border: 2px solid var(--border-color);
+            border-radius: 12px; font-size: 16px; background: var(--input-bg); color: var(--text-primary);
+            cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 16px center; background-size: 18px;
+        }
+
+        .preview-image { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 2px solid var(--border-color); cursor: pointer; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .form-row { flex-direction: column; gap: 0; }
+            .form-group { flex: 0 0 100%; }
+            .filter-section { flex-direction: column; }
+            .incident-grid { grid-template-columns: 1fr; }
+            .modal-footer { flex-direction: column; }
+            .file-actions, .github-actions { width: 100%; justify-content: center; }
+        }
+    .image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }`r`n        .image-preview-item { position: relative; border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: var(--hover-bg); border: 2px solid var(--border-color); }`r`n        .image-preview-item img { width: 100 100 cover; }`r`n        .image-preview-item .remove-image { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); border: none; border-radius: 50 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }`r`n        .admin-btn { background: var(--btn-warning); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }`r`n        .admin-btn:hover { background: var(--btn-warning-hover); }`r`n        .admin-bar { background: var(--kw-group-bg); padding: 12px 20px; border-radius: 12px; margin: 15px 0; display: flex; justify-content: flex-end; }`r`n        .dropdown-admin-modal .modal-content { max-width: 700px; }`r`n        .dropdown-list { max-height: 300px; overflow-y: auto; border: 2px solid var(--border-color); border-radius: 12px; padding: 10px; margin-top: 10px; }`r`n        .dropdown-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border-color); }`r`n        .dropdown-item input { flex: 1; margin-right: 10px; padding: 8px 12px; }`r`n        .dropdown-item button { background: var(--btn-danger); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }`r`n        .add-dropdown-item { display: flex; gap: 10px; margin-top: 15px; }`r`n        .add-dropdown-item input { flex: 1; padding: 10px; }`r`n        .add-dropdown-item button { background: var(--btn-success); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }`r`n        .image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }`r`n        .image-preview-item { position: relative; border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: var(--hover-bg); border: 2px solid var(--border-color); }`r`n        .image-preview-item img { width: 100 100 cover; }`r`n        .image-preview-item .remove-image { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); border: none; border-radius: 50 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }`r`n        .admin-btn { background: var(--btn-warning); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }`r`n        .admin-btn:hover { background: var(--btn-warning-hover); }`r`n        .admin-bar { background: var(--kw-group-bg); padding: 12px 20px; border-radius: 12px; margin: 15px 0; display: flex; justify-content: flex-end; }`r`n        .dropdown-admin-modal .modal-content { max-width: 700px; }`r`n        .dropdown-list { max-height: 300px; overflow-y: auto; border: 2px solid var(--border-color); border-radius: 12px; padding: 10px; margin-top: 10px; }`r`n        .dropdown-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border-color); }`r`n        .dropdown-item input { flex: 1; margin-right: 10px; padding: 8px 12px; }`r`n        .dropdown-item button { background: var(--btn-danger); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }`r`n        .add-dropdown-item { display: flex; gap: 10px; margin-top: 15px; }`r`n        .add-dropdown-item input { flex: 1; padding: 10px; }`r`n        .add-dropdown-item button { background: var(--btn-success); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }`r`n        </style>
+</head>
+<body data-theme="light">
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </div>
+
+    <div class="app-container">
+        <div class="app-header">
+            <h1><i class="fas fa-ruler-combined"></i> Prüfmittelüberwachung & Themenmanagement</h1>
+            <div class="subtitle">
+                <i class="fas fa-clipboard-check"></i>
+                Werk Schweinfurt · MSA / MFU / Kalibrierung · Multi-User · GitHub Sync
+            </div>
+        </div>
+
+        <!-- GitHub Token Bar -->
+        <div class="github-bar">
+            <div class="github-status">
+                <i class="fab fa-github"></i>
+                <span id="githubStatusText">GitHub: Nicht verbunden</span>
+            </div>
+            <div class="github-actions">
+                <button class="btn-github" onclick="showGitHubTokenModal()">
+                    <i class="fas fa-key"></i> Token eingeben
+                </button>
+                <button class="btn-github btn-github-success" onclick="loadFromGitHub()">
+                    <i class="fas fa-download"></i> Von GitHub laden
+                </button>
+                <button class="btn-github btn-github-success" onclick="saveAllToGitHub()">
+                    <i class="fas fa-upload"></i> Alle zu GitHub speichern
+                </button>
+            </div>
+        </div>
+
+        <div class="file-info-bar">
+            <div class="file-info">
+                <i class="fas fa-globe"></i>
+                <span id="globalFileStatus">Global: Nicht gespeichert</span>
+            </div>
+            <div class="file-info">
+                <i class="fas fa-users"></i>
+                <span id="userCountStatus">0 Mitarbeiter</span>
+            </div>
+            <div class="file-actions">
+                <button class="btn-file btn-file-success" onclick="showAddUserTabModal()">
+                    <i class="fas fa-user-plus"></i> Neuer Mitarbeiter
+                </button>
+                <button class="btn-file" onclick="saveCurrentUserData()">
+                    <i class="fas fa-save"></i> Mitarbeiter speichern
+                </button>
+            </div>
+        </div>
+
+        <div class="main-tab-navigation" id="mainTabNav">
+            <button class="main-tab-button active" data-tab="global" onclick="switchMainTab('global')">
+                <i class="fas fa-globe"></i> Global (Vorfälle)
+            </button>
+            <button class="main-tab-button" data-tab="global-themen" onclick="switchMainTab('global-themen')">
+                <i class="fas fa-tasks"></i> Global (Themen)
+            </button>
+        </div>
+
+        <div id="tabContents">
+            <div id="main-tab-global" class="main-tab-content active">
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab(this,'global-list','main-tab-global')">
+                        <i class="fas fa-list"></i> Vorfälle Liste
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab(this,'global-new','main-tab-global')">
+                        <i class="fas fa-plus-circle"></i> Neuer Vorfall
+                    </button>
+                </div>
+                <div id="subtab-global-list" class="sub-tab-content active"></div>
+                <div id="subtab-global-new" class="sub-tab-content"></div>
+            </div>
+
+            <div id="main-tab-global-themen" class="main-tab-content">
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab(this,'global-themen-list','main-tab-global-themen')">
+                        <i class="fas fa-list"></i> Themen Liste
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab(this,'global-themen-new','main-tab-global-themen')">
+                        <i class="fas fa-plus-circle"></i> Neues Thema
+                    </button>
+                </div>
+                <div id="subtab-global-themen-list" class="sub-tab-content active"></div>
+                <div id="subtab-global-themen-new" class="sub-tab-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"><i class="fas fa-file-alt"></i> Details</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="addUserTabModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Neuen Mitarbeiter-Tab erstellen</h2>
+                <button class="close-modal" onclick="closeAddUserTabModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Mitarbeiter-Name *</label>
+                    <input type="text" id="userNameInput" placeholder="z.B. Max Mustermann">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-palette"></i> Farbe</label>
+                    <select id="userColorSelect">
+                        <option value="1">Blau</option>
+                        <option value="2">Lila</option>
+                        <option value="3">Grün</option>
+                        <option value="4">Orange</option>
+                        <option value="5">Rot</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="createUserTab()">
+                    <i class="fas fa-check"></i> Erstellen
+                </button>
+                <button class="btn" onclick="closeAddUserTabModal()">
+                    <i class="fas fa-times"></i> Abbrechen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="githubTokenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fab fa-github"></i> GitHub Token eingeben</h2>
+                <button class="close-modal" onclick="closeGitHubTokenModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-key"></i> GitHub Personal Access Token</label>
+                    <input type="password" id="githubTokenInput" placeholder="ghp_xxxxx...">
+                    <small style="display: block; margin-top: 8px; color: var(--text-secondary);">
+                        Token benötigt Berechtigungen: repo, workflow<br>
+                        Benutzer: Acendrion1984 | Repo: MTipad4
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="saveGitHubToken()">
+                    <i class="fas fa-check"></i> Speichern
+                </button>
+                <button class="btn" onclick="closeGitHubTokenModal()">
+                    <i class="fas fa-times"></i> Abbrechen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirm-modal" id="confirmModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:3000;">
+        <div class="confirm-content" style="background: var(--bg-secondary); border-radius: 24px; padding: 30px; max-width: 400px; width: 100%; text-align: center;">
+            <h3 id="confirmTitle"><i class="fas fa-question-circle"></i> Bestätigung</h3>
+            <p id="confirmMessage"></p>
+            <div class="confirm-buttons" style="display: flex; gap: 15px; margin-top: 20px;">
+                <button class="btn btn-danger" id="confirmYesBtn">Ja</button>
+                <button class="btn" onclick="closeConfirmModal()">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ==================== CONFIG ====================
+        const GITHUB_USER = "Acendrion1984";
+        const GITHUB_REPO = "MTipad4";
+        
+        let githubToken = localStorage.getItem('github_token');
+        let globalIncidents = [];
+        let globalTopics = [];
+        let userTabs = [];
+        let currentUserTabId = null;
+        let pendingDeleteCallback = null;
+        let formImages = {};
+
+        // Dropdown-Optionen (zentral verwaltet für einfache Anpassung)
+        const DROPDOWN_OPTIONS = {
+            categories: ['Messmittel', 'Prüfanlage', 'Kalibrierung', 'MSA', 'MFU', 'Sonstiges'],
+            inspectionMethods: ['Lehre', 'Messuhr', 'Rauheitsmessgerät', 'KMG', 'Härteprüfer', 'Ultraschall', 'Magnetpulver', 'Wirbelstrom', 'Sonstiges'],
+            processes: ['Messraum', 'Fertigung', 'Härterei', 'Montage', 'Eingangskontrolle', 'Warenausgang', 'Labor', 'Sonstiges'],
+            errorTypes: ['Risse', 'Störung', 'Kalibrierungsfehler', 'Ausfall', 'Sonstiges'],
+            horizons: ['kurzfristig', 'langfristig', 'Audit'],
+            topicCategories: ['MSA', 'MFU', 'Kalibrierung', 'Messmittelinvestition', 'Schulung', 'Digitalisierung', 'Normierung', 'Sonstiges']
+        };
+
+        // Helper-Funktion zum Erstellen von Select-Optionen
+        function renderSelectOptions(options, selectedValue = '') {
+            let html = '<option value="">— bitte wählen —</option>';
+            options.forEach(opt => {
+                const selected = (selectedValue === opt) ? 'selected' : '';
+                html += `<option value="${opt}" ${selected}>${opt}</option>`;
+            });
+            return html;
+        }
+
+        // ==================== THEME ====================
+        window.toggleTheme = function() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-sun';
+                localStorage.setItem('zfp-theme', 'dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-moon';
+                localStorage.setItem('zfp-theme', 'light');
+            }
+        };
+        const savedTheme = localStorage.getItem('zfp-theme');
+        if (savedTheme) {
+            document.body.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // ==================== UTILS ====================
+        function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
+        
+        function toast(msg, type = 'success') {
+            const div = document.createElement('div');
+            div.className = type === 'success' ? 'success-message' : 'error-message';
+            div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${msg}</span>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+
+        function genId() { return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
+        function formatDate(iso) { return new Date(iso).toLocaleDateString('de-DE'); }
+        function formatDateTime(iso) { return new Date(iso).toLocaleString('de-DE'); }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        const max = 800;
+                        if (w > h) { if (w > max) { h *= max / w; w = max; } }
+                        else { if (h > max) { w *= max / h; h = max; } }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.75));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('userCountStatus').innerHTML = `${userTabs.length} Mitarbeiter`;
+            if (githubToken) {
+                document.getElementById('githubStatusText').innerHTML = '<i class="fab fa-github"></i> GitHub: Verbunden (Token gespeichert)';
+            } else {
+                document.getElementById('githubStatusText').innerHTML = '<i class="fab fa-github"></i> GitHub: Token nicht gesetzt';
+            }
+        }
+
+        // ==================== GITHUB FUNCTIONS ====================
+        async function callGitHubAPI(endpoint, method = 'GET', body = null) {
+            if (!githubToken) throw new Error('Kein GitHub Token vorhanden');
+            
+            const headers = {
+                'Authorization': `token ${githubToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            };
+            if (body) {
+                headers['Content-Type'] = 'application/json';
+            }
+            
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}${endpoint}`, {
+                method,
+                headers,
+                body: body ? JSON.stringify(body) : null
+            });
+            
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(`GitHub API Error: ${response.status} - ${error}`);
+            }
+            return response.json();
+        }
+
+        async function getFileSHA(path) {
+            try {
+                const data = await callGitHubAPI(`/contents/${path}`);
+                return data.sha;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function saveToGitHub(filename, data) {
+            showLoading();
+            try {
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+                const sha = await getFileSHA(filename);
+                const payload = {
+                    message: `Update ${filename} - ${new Date().toISOString()}`,
+                    content: content,
+                    branch: 'main'
+                };
+                if (sha) payload.sha = sha;
+                
+                await callGitHubAPI(`/contents/${filename}`, 'PUT', payload);
+                toast(`✅ ${filename} erfolgreich zu GitHub gespeichert`);
+                return true;
+            } catch (error) {
+                toast(`Fehler beim Speichern: ${error.message}`, 'error');
+                return false;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadFromGitHubFile(filename) {
+            try {
+                const data = await callGitHubAPI(`/contents/${filename}`);
+                const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                return content;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        window.saveAllToGitHub = async function() {
+            if (!githubToken) {
+                toast('Bitte zuerst GitHub Token eingeben!', 'error');
+                showGitHubTokenModal();
+                return;
+            }
+            
+            showLoading();
+            try {
+                // Global data speichern
+                const globalData = {
+                    version: '2.0',
+                    type: 'global',
+                    incidents: globalIncidents,
+                    topics: globalTopics,
+                    lastUpdated: new Date().toISOString()
+                };
+                await saveToGitHub('zfp_global.json', globalData);
+                
+                // Alle User-Daten speichern
+                for (const user of userTabs) {
+                    const userData = {
+                        version: '2.0',
+                        user: { id: user.id, name: user.name, color: user.color },
+                        incidents: user.incidents || [],
+                        topics: user.topics || [],
+                        lastUpdated: new Date().toISOString()
+                    };
+                    const filename = `user_${user.id}_${user.name.replace(/\s+/g, '_')}.json`;
+                    await saveToGitHub(filename, userData);
+                }
+                
+                toast(`✅ Alle Daten zu GitHub gespeichert (${userTabs.length + 1} Dateien)`);
+            } catch (error) {
+                toast(`Fehler: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.loadFromGitHub = async function() {
+            if (!githubToken) {
+                toast('Bitte zuerst GitHub Token eingeben!', 'error');
+                showGitHubTokenModal();
+                return;
+            }
+            
+            showLoading();
+            try {
+                // Globale Daten laden
+                const globalData = await loadFromGitHubFile('zfp_global.json');
+                if (globalData && globalData.type === 'global') {
+                    globalIncidents = globalData.incidents || [];
+                    globalTopics = globalData.topics || [];
+                    renderGlobalIncidents();
+                    renderGlobalTopicsView();
+                    toast(`Globale Daten geladen: ${globalIncidents.length} Vorfälle, ${globalTopics.length} Themen`);
+                }
+                
+                // User-Daten laden - wir müssen die Liste der Dateien abrufen
+                const contents = await callGitHubAPI('/contents/');
+                userTabs = [];
+                for (const item of contents) {
+                    if (item.name.startsWith('user_') && item.name.endsWith('.json')) {
+                        const userData = await loadFromGitHubFile(item.name);
+                        if (userData && userData.user) {
+                            const existingUser = userTabs.find(u => u.id === userData.user.id);
+                            if (!existingUser) {
+                                userTabs.push({
+                                    id: userData.user.id,
+                                    name: userData.user.name,
+                                    color: userData.user.color || '1',
+                                    fileName: item.name,
+                                    incidents: userData.incidents || [],
+                                    topics: userData.topics || [],
+                                    lastLoaded: new Date().toISOString(),
+                                    createdAt: userData.created_at || new Date().toISOString()
+                                });
+                                addUserToNavigation(userTabs[userTabs.length - 1]);
+                                renderUserTab(userTabs[userTabs.length - 1]);
+                            }
+                        }
+                    }
+                }
+                
+                updateStats();
+                if (userTabs.length > 0) {
+                    toast(`✅ ${userTabs.length} Mitarbeiter-Dateien geladen`);
+                }
+                updateGlobalStatus();
+            } catch (error) {
+                toast(`Fehler beim Laden: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        // ==================== GITHUB TOKEN MODAL ====================
+        window.showGitHubTokenModal = function() {
+            document.getElementById('githubTokenInput').value = githubToken || '';
+            document.getElementById('githubTokenModal').classList.add('active');
+        };
+        
+        window.closeGitHubTokenModal = function() {
+            document.getElementById('githubTokenModal').classList.remove('active');
+        };
+        
+        window.saveGitHubToken = function() {
+            const token = document.getElementById('githubTokenInput').value.trim();
+            if (token) {
+                githubToken = token;
+                localStorage.setItem('github_token', token);
+                updateStats();
+                toast('GitHub Token gespeichert!');
+                closeGitHubTokenModal();
+            } else {
+                toast('Bitte Token eingeben', 'error');
+            }
+        };
+
+        // ==================== AUTO-SAVE TO GITHUB ====================
+        async function autoSaveToGitHub() {
+            if (!githubToken) return;
+            try {
+                const globalData = {
+                    version: '2.0',
+                    type: 'global',
+                    incidents: globalIncidents,
+                    topics: globalTopics,
+                    lastUpdated: new Date().toISOString()
+                };
+                await saveToGitHub('zfp_global.json', globalData);
+            } catch(e) { console.warn('Auto-save failed', e); }
+        }
+
+        // ==================== TAB NAVIGATION ====================
+        window.switchMainTab = function(tabId) {
+            document.querySelectorAll('.main-tab-button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.main-tab-content').forEach(c => c.classList.remove('active'));
+            const btn = document.querySelector(`.main-tab-button[data-tab="${tabId}"]`);
+            if (btn) btn.classList.add('active');
+            const content = document.getElementById(`main-tab-${tabId}`);
+            if (content) content.classList.add('active');
+            if (tabId.startsWith('user-')) {
+                currentUserTabId = tabId.replace('user-', '');
+            } else {
+                currentUserTabId = null;
+            }
+        };
+
+        window.switchSubTab = function(btn, subId, parentId) {
+            const parent = document.getElementById(parentId);
+            if (!parent) return;
+            parent.querySelectorAll('.sub-tab-button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            parent.querySelectorAll('.sub-tab-content').forEach(c => c.classList.remove('active'));
+            const target = document.getElementById('subtab-' + subId);
+            if (target) target.classList.add('active');
+        };
+
+        // ==================== USER MANAGEMENT ====================
+        window.showAddUserTabModal = function() {
+            document.getElementById('userNameInput').value = '';
+            document.getElementById('addUserTabModal').classList.add('active');
+        };
+        
+        window.closeAddUserTabModal = function() {
+            document.getElementById('addUserTabModal').classList.remove('active');
+        };
+
+        window.createUserTab = function() {
+            const name = document.getElementById('userNameInput').value.trim();
+            const color = document.getElementById('userColorSelect').value;
+            if (!name) { toast('Bitte Mitarbeiter-Name eingeben', 'error'); return; }
+
+            const newUser = {
+                id: genId(),
+                name,
+                color,
+                fileName: null,
+                incidents: [],
+                topics: [],
+                createdAt: new Date().toISOString()
+            };
+            userTabs.push(newUser);
+            renderUserTab(newUser);
+            addUserToNavigation(newUser);
+            switchMainTab('user-' + newUser.id);
+            closeAddUserTabModal();
+            updateStats();
+            toast(`Tab für ${name} erstellt!`);
+        };
+
+        function addUserToNavigation(user) {
+            const nav = document.getElementById('mainTabNav');
+            if (nav.querySelector(`[data-tab="user-${user.id}"]`)) return;
+            const tabBtn = document.createElement('button');
+            tabBtn.className = 'main-tab-button user-tab';
+            tabBtn.setAttribute('data-tab', `user-${user.id}`);
+            tabBtn.style.background = `var(--user-tab-${user.color})`;
+            tabBtn.onclick = () => switchMainTab('user-' + user.id);
+            tabBtn.innerHTML = `<i class="fas fa-user"></i> ${escapeHtml(user.name)}`;
+            tabBtn.oncontextmenu = (e) => { e.preventDefault(); if (confirm(`Tab für ${user.name} schließen?`)) closeUserTab(user.id); };
+            nav.appendChild(tabBtn);
+        }
+
+        function closeUserTab(userId) {
+            const btn = document.querySelector(`[data-tab="user-${userId}"]`);
+            if (btn) btn.remove();
+            const content = document.getElementById(`main-tab-user-${userId}`);
+            if (content) content.remove();
+            const idx = userTabs.findIndex(t => t.id === userId);
+            if (idx !== -1) userTabs.splice(idx, 1);
+            if (currentUserTabId === userId) { currentUserTabId = null; switchMainTab('global'); }
+            updateStats();
+        }
+
+        function updateGlobalStatus() {
+            document.getElementById('globalFileStatus').innerHTML = `Global: ${globalIncidents.length} Vorfälle, ${globalTopics.length} Themen`;
+        }
+
+        // ==================== RENDER USER TAB ====================
+        function renderUserTab(user) {
+            let tabDiv = document.getElementById(`main-tab-user-${user.id}`);
+            if (!tabDiv) {
+                tabDiv = document.createElement('div');
+                tabDiv.id = `main-tab-user-${user.id}`;
+                tabDiv.className = 'main-tab-content';
+                document.getElementById('tabContents').appendChild(tabDiv);
+            }
+            tabDiv.innerHTML = buildUserTabHTML(user);
+        }
+
+        function buildUserTabHTML(user) {
+            return `
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab(this,'user-${user.id}-incidents','main-tab-user-${user.id}')">
+                        <i class="fas fa-exclamation-triangle"></i> Meine Vorfälle (${(user.incidents||[]).length})
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab(this,'user-${user.id}-topics','main-tab-user-${user.id}')">
+                        <i class="fas fa-tasks"></i> Meine Themen (${(user.topics||[]).length})
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab(this,'user-${user.id}-new-incident','main-tab-user-${user.id}')">
+                        <i class="fas fa-plus-circle"></i> Neuer Vorfall
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab(this,'user-${user.id}-new-topic','main-tab-user-${user.id}')">
+                        <i class="fas fa-plus"></i> Neues Thema
+                    </button>
+                </div>
+                <div id="subtab-user-${user.id}-incidents" class="sub-tab-content active">${renderUserIncidentsList(user)}</div>
+                <div id="subtab-user-${user.id}-topics" class="sub-tab-content">${renderUserTopicsList(user)}</div>
+                <div id="subtab-user-${user.id}-new-incident" class="sub-tab-content">${renderIncidentForm(user.id)}</div>
+                <div id="subtab-user-${user.id}-new-topic" class="sub-tab-content">${renderTopicForm(user.id)}</div>
+            `;
+        }
+
+        function renderIncidentForm(userId, existingIncident = null) {
+            const inc = existingIncident || {};
+            const formKey = `incident-form-${userId}-${inc.id || 'new'}`;
+            
+            return `
+                <div class="form-section">
+                    <h3><i class="fas fa-${existingIncident ? 'edit' : 'plus-circle'}"></i> ${existingIncident ? 'Vorfall bearbeiten' : 'Neuen Vorfall erfassen'}</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Kategorie *</label>
+                            <select id="${formKey}-category">${renderSelectOptions(DROPDOWN_OPTIONS.categories, inc.category)}</select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-ruler"></i> Messmitteltyp *</label>
+                            <select id="${formKey}-method">${renderSelectOptions(DROPDOWN_OPTIONS.inspectionMethods, inc.inspection_method)}</select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Bereich / Abteilung *</label>
+                            <select id="${formKey}-process">${renderSelectOptions(DROPDOWN_OPTIONS.processes, inc.process)}</select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-layer-group"></i> Kostenstelle / Standort</label>
+                            <input type="text" id="${formKey}-segment" value="${escapeAttr(inc.segment || '')}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-barcode"></i> Geräte-ID / Inventarnr.</label>
+                            <input type="text" id="${formKey}-machine" value="${escapeAttr(inc.machine_number || '')}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-file-invoice"></i> Prüfauftrag / Vorgang</label>
+                            <input type="text" id="${formKey}-order" value="${escapeAttr(inc.order_number || '')}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-exclamation-triangle"></i> Fehlerart / Abweichung</label>
+                            <select id="${formKey}-errortype">${renderSelectOptions(DROPDOWN_OPTIONS.errorTypes, inc.error_type)}</select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Hersteller / Typ</label>
+                            <input type="text" id="${formKey}-type" value="${escapeAttr(inc.type || '')}">
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-align-left"></i> Problembeschreibung *</label>
+                        <textarea id="${formKey}-desc">${escapeHtml(inc.problem_description || '')}</textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-tools"></i> Sofortmaßnahmen</label>
+                        <textarea id="${formKey}-measures">${escapeHtml(inc.measures || '')}</textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-success" onclick="${existingIncident ? `saveEditIncident('${userId}','${inc.id}','${formKey}')` : `submitIncident('${userId}','${formKey}')`}">
+                            <i class="fas fa-${existingIncident ? 'save' : 'plus-circle'}"></i> ${existingIncident ? 'Speichern' : 'Hinzufügen'}
+                        </button>
+                        <button class="btn" onclick="cancelIncidentForm('${userId}')">Abbrechen</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTopicForm(userId, existingTopic = null) {
+            const t = existingTopic || {};
+            const formKey = `topic-form-${userId}-${t.id || 'new'}`;
+            
+            return `
+                <div class="form-section">
+                    <h3><i class="fas fa-${existingTopic ? 'edit' : 'plus-circle'}"></i> ${existingTopic ? 'Thema bearbeiten' : 'Neues Thema erfassen'}</h3>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-heading"></i> Titel *</label>
+                        <input type="text" id="${formKey}-title" value="${escapeAttr(t.title || '')}">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Horizont *</label>
+                            <select id="${formKey}-horizon">${renderSelectOptions(DROPDOWN_OPTIONS.horizons, t.horizon)}</select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Kategorie *</label>
+                            <select id="${formKey}-category">${renderSelectOptions(DROPDOWN_OPTIONS.topicCategories, t.category)}</select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Bereich / Abteilung</label>
+                            <select id="${formKey}-process">${renderSelectOptions(['', ...DROPDOWN_OPTIONS.processes], t.process)}</select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-ruler"></i> Messmitteltyp</label>
+                            <select id="${formKey}-method">${renderSelectOptions(['', ...DROPDOWN_OPTIONS.inspectionMethods], t.inspection_method)}</select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-alt"></i> Startdatum</label>
+                            <input type="date" id="${formKey}-startdate" value="${t.start_date || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-check"></i> Zieldatum</label>
+                            <input type="date" id="${formKey}-targetdate" value="${t.target_date || ''}">
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-percentage"></i> Fortschritt: <span id="${formKey}-progress-val">${t.progress || 0}</span>%</label>
+                        <input type="range" id="${formKey}-progress" min="0" max="100" step="5" value="${t.progress || 0}" oninput="document.getElementById('${formKey}-progress-val').textContent=this.value">
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-align-left"></i> Beschreibung *</label>
+                        <textarea id="${formKey}-desc">${escapeHtml(t.description || '')}</textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-tools"></i> Maßnahmen / nächste Schritte</label>
+                        <textarea id="${formKey}-measures">${escapeHtml(t.measures || '')}</textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-success" onclick="${existingTopic ? `saveEditTopic('${userId}','${t.id}','${formKey}')` : `submitTopic('${userId}','${formKey}')`}">
+                            <i class="fas fa-${existingTopic ? 'save' : 'plus-circle'}"></i> ${existingTopic ? 'Speichern' : 'Hinzufügen'}
+                        </button>
+                        <button class="btn" onclick="cancelTopicForm('${userId}')">Abbrechen</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
+
+        // ==================== INCIDENT FUNCTIONS ====================
+        window.submitIncident = async function(userId, formKey) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            
+            const category = document.getElementById(`${formKey}-category`)?.value;
+            const method = document.getElementById(`${formKey}-method`)?.value;
+            const process = document.getElementById(`${formKey}-process`)?.value;
+            const desc = document.getElementById(`${formKey}-desc`)?.value.trim();
+            
+            if (!category || !method || !process || !desc) {
+                toast('Bitte alle Pflichtfelder ausfüllen (*)', 'error');
+                return;
+            }
+
+            const incident = {
+                id: genId(),
+                created_at: new Date().toISOString(),
+                status: 'open',
+                category, inspection_method: method, process,
+                segment: document.getElementById(`${formKey}-segment`)?.value,
+                machine_number: document.getElementById(`${formKey}-machine`)?.value,
+                order_number: document.getElementById(`${formKey}-order`)?.value,
+                error_type: document.getElementById(`${formKey}-errortype`)?.value,
+                type: document.getElementById(`${formKey}-type`)?.value,
+                problem_description: desc,
+                measures: document.getElementById(`${formKey}-measures`)?.value,
+                images: []
+            };
+
+            user.incidents.push(incident);
+            refreshUserSubtabs(userId);
+            toast('Vorfall hinzugefügt!');
+            autoSaveToGitHub();
+            
+            // Zurück zur Liste
+            const tabDiv = document.getElementById(`main-tab-user-${userId}`);
+            if (tabDiv) {
+                const firstBtn = tabDiv.querySelector('.sub-tab-button');
+                if (firstBtn) firstBtn.click();
+            }
+        };
+
+        window.saveEditIncident = async function(userId, incidentId, formKey) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const idx = user.incidents.findIndex(i => i.id === incidentId);
+            if (idx === -1) return;
+
+            user.incidents[idx] = {
+                ...user.incidents[idx],
+                category: document.getElementById(`${formKey}-category`)?.value,
+                inspection_method: document.getElementById(`${formKey}-method`)?.value,
+                process: document.getElementById(`${formKey}-process`)?.value,
+                segment: document.getElementById(`${formKey}-segment`)?.value,
+                machine_number: document.getElementById(`${formKey}-machine`)?.value,
+                order_number: document.getElementById(`${formKey}-order`)?.value,
+                error_type: document.getElementById(`${formKey}-errortype`)?.value,
+                type: document.getElementById(`${formKey}-type`)?.value,
+                problem_description: document.getElementById(`${formKey}-desc`)?.value,
+                measures: document.getElementById(`${formKey}-measures`)?.value,
+                updated_at: new Date().toISOString()
+            };
+
+            refreshUserSubtabs(userId);
+            toast('Vorfall aktualisiert!');
+            autoSaveToGitHub();
+            
+            const tabDiv = document.getElementById(`main-tab-user-${userId}`);
+            if (tabDiv) {
+                const firstBtn = tabDiv.querySelector('.sub-tab-button');
+                if (firstBtn) firstBtn.click();
+            }
+        };
+
+        window.cancelIncidentForm = function(userId) {
+            const tabDiv = document.getElementById(`main-tab-user-${userId}`);
+            if (tabDiv) {
+                const firstBtn = tabDiv.querySelector('.sub-tab-button');
+                if (firstBtn) firstBtn.click();
+            }
+        };
+
+        // ==================== TOPIC FUNCTIONS ====================
+        window.submitTopic = async function(userId, formKey) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            
+            const title = document.getElementById(`${formKey}-title`)?.value.trim();
+            const horizon = document.getElementById(`${formKey}-horizon`)?.value;
+            const category = document.getElementById(`${formKey}-category`)?.value;
+            const desc = document.getElementById(`${formKey}-desc`)?.value.trim();
+            
+            if (!title || !horizon || !category || !desc) {
+                toast('Bitte alle Pflichtfelder ausfüllen (*)', 'error');
+                return;
+            }
+
+            const topic = {
+                id: genId(),
+                created_at: new Date().toISOString(),
+                status: 'open',
+                title, horizon, category,
+                process: document.getElementById(`${formKey}-process`)?.value,
+                inspection_method: document.getElementById(`${formKey}-method`)?.value,
+                start_date: document.getElementById(`${formKey}-startdate`)?.value,
+                target_date: document.getElementById(`${formKey}-targetdate`)?.value,
+                progress: parseInt(document.getElementById(`${formKey}-progress`)?.value || '0'),
+                description: desc,
+                measures: document.getElementById(`${formKey}-measures`)?.value,
+                images: []
+            };
+
+            user.topics.push(topic);
+            refreshUserSubtabs(userId);
+            toast('Thema hinzugefügt!');
+            autoSaveToGitHub();
+            
+            const tabDiv = document.getElementById(`main-tab-user-${userId}`);
+            if (tabDiv) {
+                const btns = tabDiv.querySelectorAll('.sub-tab-button');
+                if (btns[1]) btns[1].click();
+            }
+        };
+
+        window.saveEditTopic = async function(userId, topicId, formKey) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const idx = user.topics.findIndex(t => t.id === topicId);
+            if (idx === -1) return;
+
+            user.topics[idx] = {
+                ...user.topics[idx],
+                title: document.getElementById(`${formKey}-title`)?.value,
+                horizon: document.getElementById(`${formKey}-horizon`)?.value,
+                category: document.getElementById(`${formKey}-category`)?.value,
+                process: document.getElementById(`${formKey}-process`)?.value,
+                inspection_method: document.getElementById(`${formKey}-method`)?.value,
+                start_date: document.getElementById(`${formKey}-startdate`)?.value,
+                target_date: document.getElementById(`${formKey}-targetdate`)?.value,
+                progress: parseInt(document.getElementById(`${formKey}-progress`)?.value || '0'),
+                description: document.getElementById(`${formKey}-desc`)?.value,
+                measures: document.getElementById(`${formKey}-measures`)?.value,
+                updated_at: new Date().toISOString()
+            };
+
+            refreshUserSubtabs(userId);
+            toast('Thema aktualisiert!');
+            autoSaveToGitHub();
+            
+            const tabDiv = document.getElementById(`main-tab-user-${userId}`);
+            if (tabDiv) {
+                const btns = tabDiv.querySelectorAll('.sub-tab-button');
+                if (btns[1]) btns[1].click();
+            }
+        };
+
+        window.cancelTopicForm = function(userId) {
+            const tabDiv = document.getElementById(`main-tab-user-${userId}`);
+            if (tabDiv) {
+                const btns = tabDiv.querySelectorAll('.sub-tab-button');
+                if (btns[1]) btns[1].click();
+            }
+        };
+
+        // ==================== RENDER LISTS ====================
+        function renderUserIncidentsList(user) {
+            if (!user.incidents || user.incidents.length === 0) {
+                return `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Keine Vorfälle vorhanden</p></div>`;
+            }
+            
+            const sorted = [...user.incidents].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            let html = `<div class="incident-grid">`;
+            sorted.forEach(inc => {
+                const sc = inc.status === 'closed' ? 'closed' : '';
+                html += `
+                    <div class="incident-card">
+                        <div class="card-header">
+                            <div class="card-badges">
+                                <span class="badge badge-category">${escapeHtml(inc.category)}</span>
+                                <span class="badge badge-method">${escapeHtml(inc.inspection_method)}</span>
+                                <span class="badge badge-status ${sc}">${inc.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</span>
+                            </div>
+                            <div class="card-date">${formatDate(inc.created_at)}</div>
+                        </div>
+                        <div class="card-content" onclick="openIncidentDetail('${user.id}','${inc.id}')">
+                            ${inc.machine_number ? `<div class="info-row"><span class="info-label">Gerät-ID:</span><span class="info-value">${escapeHtml(inc.machine_number)}</span></div>` : ''}
+                            <div class="info-row"><span class="info-label">Bereich:</span><span class="info-value">${escapeHtml(inc.process)}</span></div>
+                            <div class="info-row"><span class="info-label">Problem:</span><span class="info-value">${escapeHtml((inc.problem_description || '').substring(0, 100))}${(inc.problem_description || '').length > 100 ? '...' : ''}</span></div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-button view" onclick="openIncidentDetail('${user.id}','${inc.id}')">Details</button>
+                            <button class="action-button edit" onclick="editIncident('${user.id}','${inc.id}')">Bearbeiten</button>
+                            ${inc.status === 'open' 
+                                ? `<button class="action-button close-btn" onclick="closeIncident('${user.id}','${inc.id}')">Fertig</button>`
+                                : `<button class="action-button reopen" onclick="reopenIncident('${user.id}','${inc.id}')">Öffnen</button>`}
+                            <button class="action-button delete" onclick="deleteIncident('${user.id}','${inc.id}')">Löschen</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            return html;
+        }
+
+        function renderUserTopicsList(user) {
+            if (!user.topics || user.topics.length === 0) {
+                return `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Keine Themen vorhanden</p></div>`;
+            }
+            
+            const sorted = [...user.topics].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            let html = `<div class="incident-grid">`;
+            sorted.forEach(t => {
+                const sc = t.status === 'closed' ? 'closed' : '';
+                const hClass = t.horizon === 'langfristig' ? 'badge-long' : (t.horizon === 'kurzfristig' ? 'badge-short' : 'badge-audit');
+                html += `
+                    <div class="incident-card">
+                        <div class="card-header">
+                            <div class="card-badges">
+                                <span class="badge ${hClass}">${t.horizon === 'langfristig' ? '🌿' : (t.horizon === 'kurzfristig' ? '⚡' : '📋')} ${escapeHtml(t.horizon)}</span>
+                                <span class="badge badge-category">${escapeHtml(t.category)}</span>
+                                <span class="badge badge-status ${sc}">${t.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</span>
+                            </div>
+                        </div>
+                        <div class="card-content" onclick="openTopicDetail('${user.id}','${t.id}')">
+                            <h3 style="margin-bottom:10px;">${escapeHtml(t.title)}</h3>
+                            <div class="info-row"><span class="info-label">Beschreibung:</span><span class="info-value">${escapeHtml((t.description || '').substring(0, 100))}${(t.description || '').length > 100 ? '...' : ''}</span></div>
+                            <div class="progress-bar"><div class="progress-fill" style="width:${t.progress || 0}%"></div></div>
+                            <div style="font-size:12px; margin-top:5px;">Fortschritt: ${t.progress || 0}%</div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-button view" onclick="openTopicDetail('${user.id}','${t.id}')">Details</button>
+                            <button class="action-button edit" onclick="editTopic('${user.id}','${t.id}')">Bearbeiten</button>
+                            ${t.status === 'open'
+                                ? `<button class="action-button close-btn" onclick="closeTopic('${user.id}','${t.id}')">Fertig</button>`
+                                : `<button class="action-button reopen" onclick="reopenTopic('${user.id}','${t.id}')">Öffnen</button>`}
+                            <button class="action-button delete" onclick="deleteTopic('${user.id}','${t.id}')">Löschen</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            return html;
+        }
+
+        function refreshUserSubtabs(userId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            
+            const incidentsDiv = document.getElementById(`subtab-user-${userId}-incidents`);
+            if (incidentsDiv) incidentsDiv.innerHTML = renderUserIncidentsList(user);
+            
+            const topicsDiv = document.getElementById(`subtab-user-${userId}-topics`);
+            if (topicsDiv) topicsDiv.innerHTML = renderUserTopicsList(user);
+        }
+
+        // ==================== INCIDENT/TOPIC ACTIONS ====================
+        window.openIncidentDetail = function(userId, incidentId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const inc = user.incidents.find(i => i.id === incidentId);
+            if (!inc) return;
+            showDetailModal(inc, 'incident', userId);
+        };
+
+        window.openTopicDetail = function(userId, topicId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const topic = user.topics.find(t => t.id === topicId);
+            if (!topic) return;
+            showDetailModal(topic, 'topic', userId);
+        };
+
+        window.editIncident = function(userId, incidentId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const inc = user.incidents.find(i => i.id === incidentId);
+            if (!inc) return;
+            
+            const formDiv = document.getElementById(`subtab-user-${userId}-new-incident`);
+            if (formDiv) {
+                formDiv.innerHTML = renderIncidentForm(userId, inc);
+                const tabDiv = document.getElementById(`main-tab-user-${userId}`);
+                if (tabDiv) {
+                    tabDiv.querySelectorAll('.sub-tab-button').forEach(b => b.classList.remove('active'));
+                    const btns = tabDiv.querySelectorAll('.sub-tab-button');
+                    if (btns[2]) btns[2].classList.add('active');
+                    tabDiv.querySelectorAll('.sub-tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(`subtab-user-${userId}-new-incident`).classList.add('active');
+                }
+            }
+        };
+
+        window.editTopic = function(userId, topicId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const topic = user.topics.find(t => t.id === topicId);
+            if (!topic) return;
+            
+            const formDiv = document.getElementById(`subtab-user-${userId}-new-topic`);
+            if (formDiv) {
+                formDiv.innerHTML = renderTopicForm(userId, topic);
+                const tabDiv = document.getElementById(`main-tab-user-${userId}`);
+                if (tabDiv) {
+                    tabDiv.querySelectorAll('.sub-tab-button').forEach(b => b.classList.remove('active'));
+                    const btns = tabDiv.querySelectorAll('.sub-tab-button');
+                    if (btns[3]) btns[3].classList.add('active');
+                    tabDiv.querySelectorAll('.sub-tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(`subtab-user-${userId}-new-topic`).classList.add('active');
+                }
+            }
+        };
+
+        window.closeIncident = function(userId, incidentId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const inc = user.incidents.find(i => i.id === incidentId);
+            if (inc) {
+                inc.status = 'closed';
+                inc.closed_at = new Date().toISOString();
+                refreshUserSubtabs(userId);
+                toast('Vorfall geschlossen');
+                autoSaveToGitHub();
+            }
+        };
+
+        window.reopenIncident = function(userId, incidentId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const inc = user.incidents.find(i => i.id === incidentId);
+            if (inc) {
+                inc.status = 'open';
+                delete inc.closed_at;
+                refreshUserSubtabs(userId);
+                toast('Vorfall wieder geöffnet');
+                autoSaveToGitHub();
+            }
+        };
+
+        window.deleteIncident = function(userId, incidentId) {
+            showConfirm('Vorfall löschen?', 'Soll dieser Vorfall wirklich gelöscht werden?', () => {
+                const user = userTabs.find(t => t.id === userId);
+                if (user) {
+                    user.incidents = user.incidents.filter(i => i.id !== incidentId);
+                    refreshUserSubtabs(userId);
+                    toast('Vorfall gelöscht');
+                    autoSaveToGitHub();
+                }
+            });
+        };
+
+        window.closeTopic = function(userId, topicId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const topic = user.topics.find(t => t.id === topicId);
+            if (topic) {
+                topic.status = 'closed';
+                topic.closed_at = new Date().toISOString();
+                refreshUserSubtabs(userId);
+                toast('Thema geschlossen');
+                autoSaveToGitHub();
+            }
+        };
+
+        window.reopenTopic = function(userId, topicId) {
+            const user = userTabs.find(t => t.id === userId);
+            if (!user) return;
+            const topic = user.topics.find(t => t.id === topicId);
+            if (topic) {
+                topic.status = 'open';
+                delete topic.closed_at;
+                refreshUserSubtabs(userId);
+                toast('Thema wieder geöffnet');
+                autoSaveToGitHub();
+            }
+        };
+
+        window.deleteTopic = function(userId, topicId) {
+            showConfirm('Thema löschen?', 'Soll dieses Thema wirklich gelöscht werden?', () => {
+                const user = userTabs.find(t => t.id === userId);
+                if (user) {
+                    user.topics = user.topics.filter(t => t.id !== topicId);
+                    refreshUserSubtabs(userId);
+                    toast('Thema gelöscht');
+                    autoSaveToGitHub();
+                }
+            });
+        };
+
+        window.saveCurrentUserData = async function() {
+            if (!currentUserTabId) {
+                toast('Kein Mitarbeiter-Tab aktiv', 'error');
+                return;
+            }
+            const user = userTabs.find(t => t.id === currentUserTabId);
+            if (user) {
+                const userData = {
+                    version: '2.0',
+                    user: { id: user.id, name: user.name, color: user.color },
+                    incidents: user.incidents,
+                    topics: user.topics,
+                    lastUpdated: new Date().toISOString()
+                };
+                const filename = `user_${user.id}_${user.name.replace(/\s+/g, '_')}.json`;
+                await saveToGitHub(filename, userData);
+                toast(`Daten von ${user.name} gespeichert`);
+            }
+        };
+
+        // ==================== DETAIL MODAL ====================
+        function showDetailModal(item, type, userId) {
+            const modal = document.getElementById('detailModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalFooter = document.getElementById('modalFooter');
+            
+            modalTitle.innerHTML = `<i class="fas fa-${type === 'incident' ? 'exclamation-triangle' : 'tasks'}"></i> ${type === 'incident' ? 'Vorfall-Details' : 'Thema-Details'}`;
+            
+            let detailsHtml = '';
+            if (type === 'incident') {
+                detailsHtml = `
+                    <div class="detail-section">
+                        <div class="detail-grid">
+                            <div class="detail-item"><div class="detail-label">Kategorie</div><div class="detail-value">${escapeHtml(item.category)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Messmitteltyp</div><div class="detail-value">${escapeHtml(item.inspection_method)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Bereich</div><div class="detail-value">${escapeHtml(item.process)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value">${item.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</div></div>
+                            <div class="detail-item"><div class="detail-label">Erstellt</div><div class="detail-value">${formatDateTime(item.created_at)}</div></div>
+                            ${item.closed_at ? `<div class="detail-item"><div class="detail-label">Geschlossen</div><div class="detail-value">${formatDateTime(item.closed_at)}</div></div>` : ''}
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Problembeschreibung</h3>
+                        <div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(item.problem_description || '-')}</div>
+                    </div>
+                    ${item.measures ? `<div class="detail-section"><h3>Maßnahmen</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(item.measures)}</div></div>` : ''}
+                `;
+            } else {
+                detailsHtml = `
+                    <div class="detail-section">
+                        <h3>${escapeHtml(item.title)}</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item"><div class="detail-label">Horizont</div><div class="detail-value">${escapeHtml(item.horizon)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Kategorie</div><div class="detail-value">${escapeHtml(item.category)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value">${item.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</div></div>
+                            <div class="detail-item"><div class="detail-label">Fortschritt</div><div class="detail-value">${item.progress || 0}%</div></div>
+                            ${item.start_date ? `<div class="detail-item"><div class="detail-label">Start</div><div class="detail-value">${item.start_date}</div></div>` : ''}
+                            ${item.target_date ? `<div class="detail-item"><div class="detail-label">Ziel</div><div class="detail-value">${item.target_date}</div></div>` : ''}
+                        </div>
+                        <div class="progress-bar" style="margin-top:15px"><div class="progress-fill" style="width:${item.progress || 0}%"></div></div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Beschreibung</h3>
+                        <div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(item.description || '-')}</div>
+                    </div>
+                    ${item.measures ? `<div class="detail-section"><h3>Maßnahmen</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(item.measures)}</div></div>` : ''}
+                `;
+            }
+            
+            modalBody.innerHTML = detailsHtml;
+            modalFooter.innerHTML = `
+                <button class="btn btn-warning" onclick="closeModal();${type === 'incident' ? `editIncident('${userId}','${item.id}')` : `editTopic('${userId}','${item.id}')`}">Bearbeiten</button>
+                <button class="btn" onclick="closeModal()">Schließen</button>
+            `;
+            modal.classList.add('active');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('detailModal').classList.remove('active');
+        };
+
+        // ==================== GLOBAL FUNCTIONS ====================
+        function renderGlobalIncidents() {
+            const container = document.getElementById('subtab-global-list');
+            if (!container) return;
+            
+            if (globalIncidents.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Keine globalen Vorfälle vorhanden</p></div>`;
+                return;
+            }
+            
+            const sorted = [...globalIncidents].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            let html = `<div class="incident-grid">`;
+            sorted.forEach(inc => {
+                const sc = inc.status === 'closed' ? 'closed' : '';
+                html += `
+                    <div class="incident-card">
+                        <div class="card-header">
+                            <div class="card-badges">
+                                <span class="badge badge-category">${escapeHtml(inc.category)}</span>
+                                <span class="badge badge-method">${escapeHtml(inc.inspection_method)}</span>
+                                <span class="badge badge-status ${sc}">${inc.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</span>
+                            </div>
+                            <div class="card-date">${formatDate(inc.created_at)}</div>
+                        </div>
+                        <div class="card-content" onclick="openGlobalIncidentDetail('${inc.id}')">
+                            ${inc.machine_number ? `<div class="info-row"><span class="info-label">Gerät-ID:</span><span class="info-value">${escapeHtml(inc.machine_number)}</span></div>` : ''}
+                            <div class="info-row"><span class="info-label">Bereich:</span><span class="info-value">${escapeHtml(inc.process)}</span></div>
+                            <div class="info-row"><span class="info-label">Problem:</span><span class="info-value">${escapeHtml((inc.problem_description || '').substring(0, 100))}...</span></div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-button view" onclick="openGlobalIncidentDetail('${inc.id}')">Details</button>
+                            ${inc.status === 'open'
+                                ? `<button class="action-button close-btn" onclick="closeGlobalIncident('${inc.id}')">Fertig</button>`
+                                : `<button class="action-button reopen" onclick="reopenGlobalIncident('${inc.id}')">Öffnen</button>`}
+                            <button class="action-button delete" onclick="deleteGlobalIncident('${inc.id}')">Löschen</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderGlobalTopicsView() {
+            const container = document.getElementById('subtab-global-themen-list');
+            if (!container) return;
+            
+            if (globalTopics.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Keine globalen Themen vorhanden</p></div>`;
+                return;
+            }
+            
+            const sorted = [...globalTopics].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            let html = `<div class="incident-grid">`;
+            sorted.forEach(t => {
+                const sc = t.status === 'closed' ? 'closed' : '';
+                const hClass = t.horizon === 'langfristig' ? 'badge-long' : (t.horizon === 'kurzfristig' ? 'badge-short' : 'badge-audit');
+                html += `
+                    <div class="incident-card">
+                        <div class="card-header">
+                            <div class="card-badges">
+                                <span class="badge ${hClass}">${t.horizon === 'langfristig' ? '🌿' : (t.horizon === 'kurzfristig' ? '⚡' : '📋')} ${escapeHtml(t.horizon)}</span>
+                                <span class="badge badge-category">${escapeHtml(t.category)}</span>
+                                <span class="badge badge-status ${sc}">${t.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</span>
+                            </div>
+                        </div>
+                        <div class="card-content" onclick="openGlobalTopicDetail('${t.id}')">
+                            <h3 style="margin-bottom:10px;">${escapeHtml(t.title)}</h3>
+                            <div class="info-row"><span class="info-label">Beschreibung:</span><span class="info-value">${escapeHtml((t.description || '').substring(0, 100))}...</span></div>
+                            <div class="progress-bar"><div class="progress-fill" style="width:${t.progress || 0}%"></div></div>
+                            <div style="font-size:12px; margin-top:5px;">Fortschritt: ${t.progress || 0}%</div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-button view" onclick="openGlobalTopicDetail('${t.id}')">Details</button>
+                            ${t.status === 'open'
+                                ? `<button class="action-button close-btn" onclick="closeGlobalTopic('${t.id}')">Fertig</button>`
+                                : `<button class="action-button reopen" onclick="reopenGlobalTopic('${t.id}')">Öffnen</button>`}
+                            <button class="action-button delete" onclick="deleteGlobalTopic('${t.id}')">Löschen</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderGlobalNewIncidentForm() {
+            const container = document.getElementById('subtab-global-new');
+            if (!container) return;
+            container.innerHTML = `
+                <div class="form-section">
+                    <h3><i class="fas fa-plus-circle"></i> Globalen Vorfall erfassen</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Kategorie *</label>
+                            <select id="global-category">${renderSelectOptions(DROPDOWN_OPTIONS.categories)}</select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-ruler"></i> Messmitteltyp *</label>
+                            <select id="global-method">${renderSelectOptions(DROPDOWN_OPTIONS.inspectionMethods)}</select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Bereich / Abteilung *</label>
+                            <select id="global-process">${renderSelectOptions(DROPDOWN_OPTIONS.processes)}</select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-layer-group"></i> Kostenstelle</label>
+                            <input type="text" id="global-segment">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-barcode"></i> Geräte-ID</label>
+                            <input type="text" id="global-machine">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-file-invoice"></i> Prüfauftrag</label>
+                            <input type="text" id="global-order">
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-align-left"></i> Problembeschreibung *</label>
+                        <textarea id="global-desc" rows="4"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-tools"></i> Sofortmaßnahmen</label>
+                        <textarea id="global-measures" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-success" onclick="submitGlobalIncident()">Hinzufügen</button>
+                        <button class="btn" onclick="switchSubTab(document.querySelector('#main-tab-global .sub-tab-button'),'global-list','main-tab-global')">Abbrechen</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGlobalNewTopicForm() {
+            const container = document.getElementById('subtab-global-themen-new');
+            if (!container) return;
+            container.innerHTML = `
+                <div class="form-section">
+                    <h3><i class="fas fa-plus-circle"></i> Globales Thema erfassen</h3>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-heading"></i> Titel *</label>
+                        <input type="text" id="global-topic-title">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Horizont *</label>
+                            <select id="global-topic-horizon">${renderSelectOptions(DROPDOWN_OPTIONS.horizons)}</select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Kategorie *</label>
+                            <select id="global-topic-category">${renderSelectOptions(DROPDOWN_OPTIONS.topicCategories)}</select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-alt"></i> Startdatum</label>
+                            <input type="date" id="global-topic-start">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-check"></i> Zieldatum</label>
+                            <input type="date" id="global-topic-target">
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-percentage"></i> Fortschritt: <span id="global-progress-val">0</span>%</label>
+                        <input type="range" id="global-topic-progress" min="0" max="100" step="5" value="0" oninput="document.getElementById('global-progress-val').textContent=this.value">
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-align-left"></i> Beschreibung *</label>
+                        <textarea id="global-topic-desc" rows="4"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-tools"></i> Maßnahmen</label>
+                        <textarea id="global-topic-measures" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-success" onclick="submitGlobalTopic()">Hinzufügen</button>
+                        <button class="btn" onclick="switchSubTab(document.querySelector('#main-tab-global-themen .sub-tab-button'),'global-themen-list','main-tab-global-themen')">Abbrechen</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.submitGlobalIncident = function() {
+            const category = document.getElementById('global-category')?.value;
+            const method = document.getElementById('global-method')?.value;
+            const process = document.getElementById('global-process')?.value;
+            const desc = document.getElementById('global-desc')?.value.trim();
+            
+            if (!category || !method || !process || !desc) {
+                toast('Bitte alle Pflichtfelder ausfüllen', 'error');
+                return;
+            }
+            
+            globalIncidents.push({
+                id: genId(),
+                created_at: new Date().toISOString(),
+                status: 'open',
+                category, inspection_method: method, process,
+                segment: document.getElementById('global-segment')?.value,
+                machine_number: document.getElementById('global-machine')?.value,
+                order_number: document.getElementById('global-order')?.value,
+                problem_description: desc,
+                measures: document.getElementById('global-measures')?.value,
+                images: []
+            });
+            
+            renderGlobalIncidents();
+            renderGlobalNewIncidentForm();
+            updateGlobalStatus();
+            toast('Globaler Vorfall hinzugefügt!');
+            autoSaveToGitHub();
+            
+            const firstBtn = document.querySelector('#main-tab-global .sub-tab-button');
+            if (firstBtn) firstBtn.click();
+        };
+
+        window.submitGlobalTopic = function() {
+            const title = document.getElementById('global-topic-title')?.value.trim();
+            const horizon = document.getElementById('global-topic-horizon')?.value;
+            const category = document.getElementById('global-topic-category')?.value;
+            const desc = document.getElementById('global-topic-desc')?.value.trim();
+            
+            if (!title || !horizon || !category || !desc) {
+                toast('Bitte alle Pflichtfelder ausfüllen', 'error');
+                return;
+            }
+            
+            globalTopics.push({
+                id: genId(),
+                created_at: new Date().toISOString(),
+                status: 'open',
+                title, horizon, category,
+                start_date: document.getElementById('global-topic-start')?.value,
+                target_date: document.getElementById('global-topic-target')?.value,
+                progress: parseInt(document.getElementById('global-topic-progress')?.value || '0'),
+                description: desc,
+                measures: document.getElementById('global-topic-measures')?.value,
+                images: []
+            });
+            
+            renderGlobalTopicsView();
+            renderGlobalNewTopicForm();
+            updateGlobalStatus();
+            toast('Globales Thema hinzugefügt!');
+            autoSaveToGitHub();
+            
+            const firstBtn = document.querySelector('#main-tab-global-themen .sub-tab-button');
+            if (firstBtn) firstBtn.click();
+        };
+
+        window.openGlobalIncidentDetail = function(id) {
+            const inc = globalIncidents.find(i => i.id === id);
+            if (inc) showGlobalDetailModal(inc, 'incident');
+        };
+
+        window.openGlobalTopicDetail = function(id) {
+            const topic = globalTopics.find(t => t.id === id);
+            if (topic) showGlobalDetailModal(topic, 'topic');
+        };
+
+        function showGlobalDetailModal(item, type) {
+            const modal = document.getElementById('detailModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalFooter = document.getElementById('modalFooter');
+            
+            modalTitle.innerHTML = `<i class="fas fa-globe"></i> Global: ${type === 'incident' ? 'Vorfall' : 'Thema'}`;
+            
+            let detailsHtml = '';
+            if (type === 'incident') {
+                detailsHtml = `
+                    <div class="detail-section">
+                        <div class="detail-grid">
+                            <div class="detail-item"><div class="detail-label">Kategorie</div><div class="detail-value">${escapeHtml(item.category)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Messmitteltyp</div><div class="detail-value">${escapeHtml(item.inspection_method)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Bereich</div><div class="detail-value">${escapeHtml(item.process)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value">${item.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</div></div>
+                            <div class="detail-item"><div class="detail-label">Erstellt</div><div class="detail-value">${formatDateTime(item.created_at)}</div></div>
+                        </div>
+                    </div>
+                    <div class="detail-section"><h3>Problembeschreibung</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(item.problem_description)}</div></div>
+                    ${item.measures ? `<div class="detail-section"><h3>Maßnahmen</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(item.measures)}</div></div>` : ''}
+                `;
+            } else {
+                detailsHtml = `
+                    <div class="detail-section">
+                        <h3>${escapeHtml(item.title)}</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item"><div class="detail-label">Horizont</div><div class="detail-value">${escapeHtml(item.horizon)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Kategorie</div><div class="detail-value">${escapeHtml(item.category)}</div></div>
+                            <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value">${item.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</div></div>
+                            <div class="detail-item"><div class="detail-label">Fortschritt</div><div class="detail-value">${item.progress || 0}%</div></div>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width:${item.progress || 0}%"></div></div>
+                    </div>
+                    <div class="detail-section"><h3>Beschreibung</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(item.description)}</div></div>
+                    ${item.measures ? `<div class="detail-section"><h3>Maßnahmen</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(item.measures)}</div></div>` : ''}
+                `;
+            }
+            
+            modalBody.innerHTML = detailsHtml;
+            modalFooter.innerHTML = `<button class="btn" onclick="closeModal()">Schließen</button>`;
+            modal.classList.add('active');
+        }
+
+        window.closeGlobalIncident = function(id) {
+            const inc = globalIncidents.find(i => i.id === id);
+            if (inc) { inc.status = 'closed'; inc.closed_at = new Date().toISOString(); renderGlobalIncidents(); autoSaveToGitHub(); toast('Vorfall geschlossen'); }
+        };
+
+        window.reopenGlobalIncident = function(id) {
+            const inc = globalIncidents.find(i => i.id === id);
+            if (inc) { inc.status = 'open'; delete inc.closed_at; renderGlobalIncidents(); autoSaveToGitHub(); toast('Vorfall wieder geöffnet'); }
+        };
+
+        window.deleteGlobalIncident = function(id) {
+            showConfirm('Vorfall löschen?', 'Soll dieser globale Vorfall gelöscht werden?', () => {
+                globalIncidents = globalIncidents.filter(i => i.id !== id);
+                renderGlobalIncidents();
+                autoSaveToGitHub();
+                toast('Vorfall gelöscht');
+            });
+        };
+
+        window.closeGlobalTopic = function(id) {
+            const topic = globalTopics.find(t => t.id === id);
+            if (topic) { topic.status = 'closed'; topic.closed_at = new Date().toISOString(); renderGlobalTopicsView(); autoSaveToGitHub(); toast('Thema geschlossen'); }
+        };
+
+        window.reopenGlobalTopic = function(id) {
+            const topic = globalTopics.find(t => t.id === id);
+            if (topic) { topic.status = 'open'; delete topic.closed_at; renderGlobalTopicsView(); autoSaveToGitHub(); toast('Thema wieder geöffnet'); }
+        };
+
+        window.deleteGlobalTopic = function(id) {
+            showConfirm('Thema löschen?', 'Soll dieses globale Thema gelöscht werden?', () => {
+                globalTopics = globalTopics.filter(t => t.id !== id);
+                renderGlobalTopicsView();
+                autoSaveToGitHub();
+                toast('Thema gelöscht');
+            });
+        };
+
+        // ==================== CONFIRM MODAL ====================
+        window.showConfirm = function(title, message, callback) {
+            document.getElementById('confirmTitle').innerHTML = `<i class="fas fa-question-circle"></i> ${escapeHtml(title)}`;
+            document.getElementById('confirmMessage').textContent = message;
+            pendingDeleteCallback = callback;
+            document.getElementById('confirmModal').style.display = 'flex';
+        };
+        
+        window.closeConfirmModal = function() {
+            document.getElementById('confirmModal').style.display = 'none';
+            pendingDeleteCallback = null;
+        };
+        
+        document.getElementById('confirmYesBtn').onclick = function() {
+            if (pendingDeleteCallback) pendingDeleteCallback();
+            closeConfirmModal();
+        };
+
+        // ==================== INIT ====================
+        function init() {
+            globalIncidents = [];
+            globalTopics = [];
+            userTabs = [];
+            renderGlobalIncidents();
+            renderGlobalNewIncidentForm();
+            renderGlobalTopicsView();
+            renderGlobalNewTopicForm();
+            updateStats();
+            updateGlobalStatus();
+            
+            // Token aus localStorage laden
+            if (localStorage.getItem('github_token')) {
+                githubToken = localStorage.getItem('github_token');
+                updateStats();
+            }
+        }
+        
+        init();
+    })();
+    </script>
+</body>
+</html>
