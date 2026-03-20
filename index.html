@@ -617,8 +617,54 @@
         async function callGitHubAPI(endpoint, method = 'GET', body = null) { if (!githubToken) throw new Error('Kein Token'); const headers = { 'Authorization': `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' }; if (body) headers['Content-Type'] = 'application/json'; const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}${endpoint}`, { method, headers, body: body ? JSON.stringify(body) : null }); if (!res.ok) throw new Error(`GitHub Error: ${res.status}`); return res.json(); }
         async function getFileSHA(path) { try { const data = await callGitHubAPI(`/contents/${path}`); return data.sha; } catch(e) { return null; } }
         async function saveToGitHub(filename, data) { const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))); const sha = await getFileSHA(filename); await callGitHubAPI(`/contents/${filename}`, 'PUT', { message: `Update ${filename}`, content: content, branch: 'main', ...(sha && { sha }) }); }
-        window.saveAllToGitHub = async function() { if (!githubToken) { toast('Bitte Token eingeben', 'error'); showGitHubTokenModal(); return; } try { await saveToGitHub('zfp_global.json', { version: '2.0', incidents: globalIncidents, topics: globalTopics }); for (const u of userTabs) { await saveToGitHub(`user_${u.id}.json`, { user: { id: u.id, name: u.name, color: u.color }, incidents: u.incidents, topics: u.topics }); } toast('Alle Daten gespeichert'); } catch(e) { toast('Fehler: ' + e.message, 'error'); } };
-        window.loadFromGitHub = async function() { if (!githubToken) { toast('Bitte Token eingeben', 'error'); showGitHubTokenModal(); return; } try { const global = await (async () => { try { const d = await callGitHubAPI(`/contents/zfp_global.json`); return JSON.parse(decodeURIComponent(escape(atob(d.content)))); } catch(e) { return null; } })(); if (global) { globalIncidents = global.incidents || []; globalTopics = global.topics || []; renderGlobalIncidents(); renderGlobalTopics(); toast('Globale Daten geladen'); } const contents = await callGitHubAPI('/contents/'); userTabs = []; for (const item of contents) { if (item.name.startsWith('user_') && item.name.endsWith('.json')) { try { const d = await callGitHubAPI(`/contents/${item.name}`); const ud = JSON.parse(decodeURIComponent(escape(atob(d.content)))); if (ud.user) { userTabs.push({ ...ud.user, incidents: ud.incidents || [], topics: ud.topics || [] }); } } catch(e) {} } } document.getElementById('userCount').innerText = userTabs.length; userTabs.forEach(u => addUserTabButton(u)); toast(`${userTabs.length} Mitarbeiter geladen`); } catch(e) { toast('Fehler: ' + e.message, 'error'); } };
+window.saveAllToGitHub = async function() {
+    if (!githubToken) { toast('Bitte Token eingeben', 'error'); showGitHubTokenModal(); return; }
+    try {
+        // Speichere globale Daten INKLUSIVE Dropdowns
+        await saveToGitHub('zfp_global.json', { 
+            version: '2.0', 
+            incidents: globalIncidents, 
+            topics: globalTopics,
+            dropdowns: DROPDOWN_OPTIONS  // ← Dropdowns mit speichern
+        });
+        
+        // Speichere User-Daten
+        for (const u of userTabs) {
+            await saveToGitHub(`user_${u.id}.json`, { 
+                user: { id: u.id, name: u.name, color: u.color }, 
+                incidents: u.incidents, 
+                topics: u.topics 
+            });
+        }
+        toast('Alle Daten + Dropdowns gespeichert');
+    } catch(e) { toast('Fehler: ' + e.message, 'error'); }
+};
+        window.loadFromGitHub = async function() {
+    if (!githubToken) { toast('Bitte Token eingeben', 'error'); showGitHubTokenModal(); return; }
+    try {
+        const global = await (async () => {
+            try { 
+                const d = await callGitHubAPI(`/contents/zfp_global.json`);
+                return JSON.parse(decodeURIComponent(escape(atob(d.content))));
+            } catch(e) { return null; }
+        })();
+        
+        if (global) {
+            globalIncidents = global.incidents || [];
+            globalTopics = global.topics || [];
+            
+            // ← Dropdowns aus GitHub laden und speichern
+            if (global.dropdowns) {
+                DROPDOWN_OPTIONS = global.dropdowns;
+                localStorage.setItem('custom_dropdowns', JSON.stringify(DROPDOWN_OPTIONS));
+                toast('Dropdown-Optionen von GitHub geladen');
+            }
+            
+            renderGlobalIncidents();
+            renderGlobalTopics();
+            refreshAllForms(); // ← Aktualisiert alle Dropdowns in Formularen
+            toast('Globale Daten geladen');
+        }
         window.showGitHubTokenModal = function() { document.getElementById('githubTokenModal').classList.add('active'); document.getElementById('githubTokenInput').value = githubToken || ''; };
         window.saveGitHubToken = function() { githubToken = document.getElementById('githubTokenInput').value.trim(); if (githubToken) { localStorage.setItem('github_token', githubToken); document.getElementById('githubStatusText').innerHTML = 'GitHub: Verbunden'; toast('Token gespeichert'); closeModal('githubTokenModal'); } };
 
