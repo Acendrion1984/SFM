@@ -3,7 +3,7 @@
   "type": "global",
   "incidents": [],
   "topics": [],
-  "lastUpdated": "2026-03-20T21:18:23.351Z",
+  "lastUpdated": "2026-03-20T21:18:26.036Z",
   "dropdowns": {
     "categories": [
       "Messmittel",
@@ -27,7 +27,7 @@
     "processes": [
       "Segment 4",
       "Segment 6",
-      "Härterei",
+      "Segment 11",
       "Montage",
       "Eingangskontrolle",
       "Warenausgang",
