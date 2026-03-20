@@ -3,7 +3,7 @@
   "type": "global",
   "incidents": [],
   "topics": [],
-  "lastUpdated": "2026-03-20T21:19:18.608Z",
+  "lastUpdated": "2026-03-20T21:19:21.676Z",
   "dropdowns": {
     "categories": [
       "Messmittel",
@@ -14,7 +14,6 @@
       "Sonstiges"
     ],
     "inspectionMethods": [
-      "Lehre",
       "Messuhr",
       "Rauheitsmessgerät",
       "Härteprüfer",
