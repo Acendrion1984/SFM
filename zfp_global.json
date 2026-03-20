@@ -3,11 +3,11 @@
   "type": "global",
   "incidents": [],
   "topics": [],
-  "lastUpdated": "2026-03-20T21:20:16.552Z",
+  "lastUpdated": "2026-03-20T21:20:58.677Z",
   "dropdowns": {
     "categories": [
       "ZfP Anlage",
-      "ZfP Prüfung",
+      "Defekt",
       "Kalibrierung",
       "MSA",
       "MFU",
