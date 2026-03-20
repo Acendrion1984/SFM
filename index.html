@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Prüfmittelüberwachung · Anpassbare Dropdowns · GitHub Sync</title>
+    <title>Prüfmittelüberwachung · Alle Felder · Anpassbare Dropdowns · GitHub Sync</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,11 +38,6 @@
             --text-on-badge: #0f172a;
             --kw-group-bg: #e2e8f0;
             --tab-hover: #e2e8f0;
-            --user-tab-1: #e3f2fd;
-            --user-tab-2: #f3e5f5;
-            --user-tab-3: #e8f5e8;
-            --user-tab-4: #fff3e0;
-            --user-tab-5: #ffe0e0;
         }
 
         [data-theme="dark"] {
@@ -82,8 +77,6 @@
             width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 12px var(--shadow-color);
         }
-        .theme-toggle:hover { transform: scale(1.1); }
-        .theme-toggle i { font-size: 24px; color: var(--text-primary); }
 
         .app-header {
             background: var(--header-gradient); color: white; padding: 25px;
@@ -147,6 +140,7 @@
             padding: 15px 25px; background: none; border: none; font-size: 16px;
             font-weight: 600; color: var(--text-secondary); cursor: pointer;
             border-bottom: 3px solid transparent;
+            transition: all 0.2s;
         }
         .main-tab-button.active { color: var(--btn-primary); border-bottom-color: var(--btn-primary); }
 
@@ -212,7 +206,7 @@
             font-size: 12px;
         }
 
-        .incident-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+        .incident-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 20px; }
         .incident-card {
             background: var(--card-bg); border: 2px solid var(--border-color);
             border-radius: 16px; padding: 20px; transition: all 0.2s;
@@ -752,8 +746,16 @@
                     <div class="form-group"><label><i class="fas fa-ruler"></i> Messmitteltyp *</label><select id="${fk}-method">${renderSelectOptions('inspectionMethods')}</select></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label><i class="fas fa-map-marker-alt"></i> Bereich *</label><select id="${fk}-process">${renderSelectOptions('processes')}</select></div>
-                    <div class="form-group"><label><i class="fas fa-barcode"></i> Geräte-ID</label><input id="${fk}-machine" placeholder="z.B. M-12345"></div>
+                    <div class="form-group"><label><i class="fas fa-map-marker-alt"></i> Bereich / Abteilung *</label><select id="${fk}-process">${renderSelectOptions('processes')}</select></div>
+                    <div class="form-group"><label><i class="fas fa-layer-group"></i> Kostenstelle / Standort</label><input id="${fk}-segment" placeholder="z.B. Kostenstelle 4711"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label><i class="fas fa-barcode"></i> Geräte-ID / Inventarnr.</label><input id="${fk}-machine" placeholder="z.B. M-12345"></div>
+                    <div class="form-group"><label><i class="fas fa-file-invoice"></i> Prüfauftrag / Vorgang</label><input id="${fk}-order" placeholder="z.B. PA-2024-001"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label><i class="fas fa-exclamation-triangle"></i> Fehlerart / Abweichung</label><select id="${fk}-errortype">${renderSelectOptions('errorTypes')}</select></div>
+                    <div class="form-group"><label><i class="fas fa-tag"></i> Hersteller / Typ</label><input id="${fk}-type" placeholder="z.B. Mitutoyo"></div>
                 </div>
                 <div class="form-group full-width"><label><i class="fas fa-align-left"></i> Problembeschreibung *</label><textarea id="${fk}-desc" rows="3" placeholder="Beschreibung des Vorfalls..."></textarea></div>
                 <div class="form-group full-width"><label><i class="fas fa-tools"></i> Sofortmaßnahmen</label><textarea id="${fk}-measures" rows="2" placeholder="Ergriffene Maßnahmen..."></textarea></div>
@@ -772,6 +774,10 @@
                 <div class="form-row">
                     <div class="form-group"><label><i class="fas fa-clock"></i> Horizont *</label><select id="${fk}-horizon">${renderSelectOptions('horizons')}</select></div>
                     <div class="form-group"><label><i class="fas fa-tag"></i> Kategorie *</label><select id="${fk}-category">${renderSelectOptions('topicCategories')}</select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label><i class="fas fa-map-marker-alt"></i> Bereich / Abteilung</label><select id="${fk}-process">${renderSelectOptions('processes')}</select></div>
+                    <div class="form-group"><label><i class="fas fa-ruler"></i> Messmitteltyp</label><select id="${fk}-method">${renderSelectOptions('inspectionMethods')}</select></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label><i class="fas fa-calendar-alt"></i> Startdatum</label><input type="date" id="${fk}-startdate"></div>
@@ -795,7 +801,11 @@
             globalIncidents.push({ 
                 id: genId(), created_at: new Date().toISOString(), status: 'open', 
                 category, inspection_method: method, process, 
+                segment: document.getElementById(`${fk}-segment`)?.value,
                 machine_number: document.getElementById(`${fk}-machine`)?.value,
+                order_number: document.getElementById(`${fk}-order`)?.value,
+                error_type: document.getElementById(`${fk}-errortype`)?.value,
+                type: document.getElementById(`${fk}-type`)?.value,
                 problem_description: desc, 
                 measures: document.getElementById(`${fk}-measures`)?.value,
                 images: getImages(fk) 
@@ -812,6 +822,8 @@
             globalTopics.push({ 
                 id: genId(), created_at: new Date().toISOString(), status: 'open', 
                 title, horizon, category, 
+                process: document.getElementById(`${fk}-process`)?.value,
+                inspection_method: document.getElementById(`${fk}-method`)?.value,
                 start_date: document.getElementById(`${fk}-startdate`)?.value,
                 target_date: document.getElementById(`${fk}-targetdate`)?.value,
                 progress: parseInt(document.getElementById(`${fk}-progress`)?.value || 0),
@@ -839,7 +851,11 @@
                 <div class="detail-item"><div class="detail-label">Bereich</div><div class="detail-value">${escapeHtml(inc.process)}</div></div>
                 <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value">${inc.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</div></div>
                 <div class="detail-item"><div class="detail-label">Erstellt</div><div class="detail-value">${formatDateTime(inc.created_at)}</div></div>
+                ${inc.segment ? `<div class="detail-item"><div class="detail-label">Kostenstelle</div><div class="detail-value">${escapeHtml(inc.segment)}</div></div>` : ''}
                 ${inc.machine_number ? `<div class="detail-item"><div class="detail-label">Geräte-ID</div><div class="detail-value">${escapeHtml(inc.machine_number)}</div></div>` : ''}
+                ${inc.order_number ? `<div class="detail-item"><div class="detail-label">Prüfauftrag</div><div class="detail-value">${escapeHtml(inc.order_number)}</div></div>` : ''}
+                ${inc.error_type ? `<div class="detail-item"><div class="detail-label">Fehlerart</div><div class="detail-value">${escapeHtml(inc.error_type)}</div></div>` : ''}
+                ${inc.type ? `<div class="detail-item"><div class="detail-label">Hersteller/Typ</div><div class="detail-value">${escapeHtml(inc.type)}</div></div>` : ''}
             </div>
             <div class="detail-section"><h3>Problembeschreibung</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(inc.problem_description)}</div></div>`;
             if (inc.measures) html += `<div class="detail-section"><h3>Maßnahmen</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(inc.measures)}</div></div>`;
@@ -862,6 +878,8 @@
                 <div class="detail-item"><div class="detail-label">Kategorie</div><div class="detail-value">${escapeHtml(t.category)}</div></div>
                 <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value">${t.status === 'open' ? '🟢 Offen' : '🔴 Geschlossen'}</div></div>
                 <div class="detail-item"><div class="detail-label">Fortschritt</div><div class="detail-value">${t.progress || 0}%</div></div>
+                ${t.process ? `<div class="detail-item"><div class="detail-label">Bereich</div><div class="detail-value">${escapeHtml(t.process)}</div></div>` : ''}
+                ${t.inspection_method ? `<div class="detail-item"><div class="detail-label">Messmitteltyp</div><div class="detail-value">${escapeHtml(t.inspection_method)}</div></div>` : ''}
                 ${t.start_date ? `<div class="detail-item"><div class="detail-label">Start</div><div class="detail-value">${t.start_date}</div></div>` : ''}
                 ${t.target_date ? `<div class="detail-item"><div class="detail-label">Ziel</div><div class="detail-value">${t.target_date}</div></div>` : ''}
             </div>
@@ -885,7 +903,7 @@
             document.getElementById(`global-${sub}`).classList.add('active');
         }
 
-        // ==================== USER FUNKTIONEN ====================
+        // ==================== USER FUNKTIONEN (mit Farben) ====================
         function showAddUserModal() { document.getElementById('addUserModal').classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
@@ -908,8 +926,17 @@
             const btn = document.createElement('button');
             btn.className = 'main-tab-button';
             btn.setAttribute('data-tab', `user-${user.id}`);
+            // Farbe als Hintergrund oder border? Wir setzen eine sanfte Hintergrundfarbe basierend auf der User-Farbe
+            const colorMap = {1: '#e3f2fd', 2: '#f3e5f5', 3: '#e8f5e8', 4: '#fff3e0', 5: '#ffe0e0'};
+            btn.style.backgroundColor = colorMap[user.color] || '#e3f2fd';
             btn.innerHTML = `<i class="fas fa-user"></i> ${escapeHtml(user.name)}`;
             btn.onclick = () => switchToUserTab(user);
+            btn.oncontextmenu = (e) => {
+                e.preventDefault();
+                if (confirm(`Tab für ${user.name} schließen?`)) {
+                    closeUserTab(user.id);
+                }
+            };
             nav.appendChild(btn);
             const content = document.createElement('div');
             content.id = `main-tab-user-${user.id}`;
@@ -917,6 +944,21 @@
             content.innerHTML = `<div class="sub-tab-navigation" id="user-nav-${user.id}"></div><div id="user-content-${user.id}"></div>`;
             document.getElementById('tabContents').appendChild(content);
             renderUserTabContent(user);
+        }
+        
+        function closeUserTab(userId) {
+            const btn = document.querySelector(`[data-tab="user-${userId}"]`);
+            if (btn) btn.remove();
+            const content = document.getElementById(`main-tab-user-${userId}`);
+            if (content) content.remove();
+            const idx = userTabs.findIndex(u => u.id === userId);
+            if (idx !== -1) userTabs.splice(idx, 1);
+            if (currentUserTab && currentUserTab.id === userId) {
+                currentUserTab = null;
+                switchMainTab('global');
+            }
+            document.getElementById('userCountStatus').innerText = userTabs.length;
+            autoSave();
         }
         
         function switchToUserTab(user) {
@@ -949,7 +991,7 @@
             user.incidents.forEach(inc => {
                 html += `<div class="incident-card">
                     <div class="card-header"><span class="badge badge-category">${escapeHtml(inc.category)}</span><span class="badge badge-status ${inc.status || 'open'}">${inc.status === 'closed' ? 'Geschlossen' : 'Offen'}</span></div>
-                    <div><strong>${escapeHtml(inc.process)}</strong></div>
+                    <div><strong>${escapeHtml(inc.process)}</strong> ${inc.machine_number ? '| Gerät: ' + escapeHtml(inc.machine_number) : ''}</div>
                     <div style="margin:10px 0;">${escapeHtml((inc.problem_description || '').substring(0, 80))}</div>
                     ${inc.images && inc.images.length ? `<div><i class="fas fa-image"></i> ${inc.images.length} Bilder</div>` : ''}
                     <div class="card-actions"><button class="action-button" style="background:var(--btn-danger);color:white;" onclick="deleteUserIncident('${userId}','${inc.id}')"><i class="fas fa-trash"></i> Löschen</button></div>
@@ -982,8 +1024,15 @@
             contentDiv.innerHTML = `<div class="form-section">
                 <h3><i class="fas fa-plus-circle"></i> Neuen Vorfall erfassen</h3>
                 <div class="form-row"><div class="form-group"><label>Kategorie *</label><select id="${fk}-category">${renderSelectOptions('categories')}</select></div>
-                <div class="form-group"><label>Bereich *</label><select id="${fk}-process">${renderSelectOptions('processes')}</select></div></div>
+                <div class="form-group"><label>Messmitteltyp *</label><select id="${fk}-method">${renderSelectOptions('inspectionMethods')}</select></div></div>
+                <div class="form-row"><div class="form-group"><label>Bereich *</label><select id="${fk}-process">${renderSelectOptions('processes')}</select></div>
+                <div class="form-group"><label>Kostenstelle</label><input id="${fk}-segment"></div></div>
+                <div class="form-row"><div class="form-group"><label>Geräte-ID</label><input id="${fk}-machine"></div>
+                <div class="form-group"><label>Prüfauftrag</label><input id="${fk}-order"></div></div>
+                <div class="form-row"><div class="form-group"><label>Fehlerart</label><select id="${fk}-errortype">${renderSelectOptions('errorTypes')}</select></div>
+                <div class="form-group"><label>Hersteller/Typ</label><input id="${fk}-type"></div></div>
                 <div class="form-group full-width"><label>Problembeschreibung *</label><textarea id="${fk}-desc" rows="3"></textarea></div>
+                <div class="form-group full-width"><label>Sofortmaßnahmen</label><textarea id="${fk}-measures" rows="2"></textarea></div>
                 <div class="form-group full-width"><label>Bilder</label><input type="file" id="${fk}-images" accept="image/*" multiple><div id="${fk}-preview" class="image-preview-grid"></div></div>
                 <div class="form-actions"><button class="btn btn-success" onclick="saveUserIncident('${userId}','${fk}')"><i class="fas fa-save"></i> Speichern</button></div>
             </div>`;
@@ -998,7 +1047,13 @@
                 <div class="form-group full-width"><label>Titel *</label><input id="${fk}-title"></div>
                 <div class="form-row"><div class="form-group"><label>Horizont *</label><select id="${fk}-horizon">${renderSelectOptions('horizons')}</select></div>
                 <div class="form-group"><label>Kategorie *</label><select id="${fk}-category">${renderSelectOptions('topicCategories')}</select></div></div>
+                <div class="form-row"><div class="form-group"><label>Bereich</label><select id="${fk}-process">${renderSelectOptions('processes')}</select></div>
+                <div class="form-group"><label>Messmitteltyp</label><select id="${fk}-method">${renderSelectOptions('inspectionMethods')}</select></div></div>
+                <div class="form-row"><div class="form-group"><label>Startdatum</label><input type="date" id="${fk}-startdate"></div>
+                <div class="form-group"><label>Zieldatum</label><input type="date" id="${fk}-targetdate"></div></div>
+                <div class="form-group full-width"><label>Fortschritt: <span id="${fk}-progress-val">0</span>%</label><input type="range" id="${fk}-progress" min="0" max="100" step="5" value="0" oninput="document.getElementById('${fk}-progress-val').innerText=this.value"></div>
                 <div class="form-group full-width"><label>Beschreibung *</label><textarea id="${fk}-desc" rows="3"></textarea></div>
+                <div class="form-group full-width"><label>Maßnahmen</label><textarea id="${fk}-measures" rows="2"></textarea></div>
                 <div class="form-group full-width"><label>Bilder</label><input type="file" id="${fk}-images" accept="image/*" multiple><div id="${fk}-preview" class="image-preview-grid"></div></div>
                 <div class="form-actions"><button class="btn btn-success" onclick="saveUserTopic('${userId}','${fk}')"><i class="fas fa-save"></i> Speichern</button></div>
             </div>`;
@@ -1009,10 +1064,22 @@
             const user = userTabs.find(u => u.id === userId);
             if (!user) return;
             const category = document.getElementById(`${fk}-category`)?.value;
+            const method = document.getElementById(`${fk}-method`)?.value;
             const process = document.getElementById(`${fk}-process`)?.value;
             const desc = document.getElementById(`${fk}-desc`)?.value.trim();
-            if (!category || !process || !desc) { toast('Bitte Pflichtfelder füllen', 'error'); return; }
-            user.incidents.push({ id: genId(), created_at: new Date().toISOString(), status: 'open', category, process, problem_description: desc, images: getImages(fk) });
+            if (!category || !method || !process || !desc) { toast('Bitte Pflichtfelder füllen', 'error'); return; }
+            user.incidents.push({ 
+                id: genId(), created_at: new Date().toISOString(), status: 'open', 
+                category, inspection_method: method, process, 
+                segment: document.getElementById(`${fk}-segment`)?.value,
+                machine_number: document.getElementById(`${fk}-machine`)?.value,
+                order_number: document.getElementById(`${fk}-order`)?.value,
+                error_type: document.getElementById(`${fk}-errortype`)?.value,
+                type: document.getElementById(`${fk}-type`)?.value,
+                problem_description: desc, 
+                measures: document.getElementById(`${fk}-measures`)?.value,
+                images: getImages(fk) 
+            });
             renderUserIncidents(userId); toast('Vorfall gespeichert'); autoSave();
         };
         
@@ -1024,7 +1091,18 @@
             const category = document.getElementById(`${fk}-category`)?.value;
             const desc = document.getElementById(`${fk}-desc`)?.value.trim();
             if (!title || !horizon || !category || !desc) { toast('Bitte Pflichtfelder füllen', 'error'); return; }
-            user.topics.push({ id: genId(), created_at: new Date().toISOString(), status: 'open', title, horizon, category, description: desc, images: getImages(fk), progress: 0 });
+            user.topics.push({ 
+                id: genId(), created_at: new Date().toISOString(), status: 'open', 
+                title, horizon, category, 
+                process: document.getElementById(`${fk}-process`)?.value,
+                inspection_method: document.getElementById(`${fk}-method`)?.value,
+                start_date: document.getElementById(`${fk}-startdate`)?.value,
+                target_date: document.getElementById(`${fk}-targetdate`)?.value,
+                progress: parseInt(document.getElementById(`${fk}-progress`)?.value || 0),
+                description: desc, 
+                measures: document.getElementById(`${fk}-measures`)?.value,
+                images: getImages(fk) 
+            });
             renderUserTopics(userId); toast('Thema gespeichert'); autoSave();
         };
         
