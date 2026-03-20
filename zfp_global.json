@@ -3,7 +3,7 @@
   "type": "global",
   "incidents": [],
   "topics": [],
-  "lastUpdated": "2026-03-20T21:18:30.013Z",
+  "lastUpdated": "2026-03-20T21:18:36.267Z",
   "dropdowns": {
     "categories": [
       "Messmittel",
@@ -29,7 +29,7 @@
       "Segment 6",
       "Segment 11",
       "Segment 12",
-      "Eingangskontrolle",
+      "Segment 14",
       "Warenausgang",
       "Labor",
       "Sonstiges"
