@@ -3,5 +3,57 @@
   "type": "global",
   "incidents": [],
   "topics": [],
-  "lastUpdated": "2026-03-20T20:01:23.737Z"
+  "lastUpdated": "2026-03-20T21:17:46.991Z",
+  "dropdowns": {
+    "categories": [
+      "Messmittel",
+      "Prüfanlage",
+      "Kalibrierung",
+      "MSA",
+      "MFU",
+      "Sonstiges"
+    ],
+    "inspectionMethods": [
+      "Lehre",
+      "Messuhr",
+      "Rauheitsmessgerät",
+      "KMG",
+      "Härteprüfer",
+      "Ultraschall",
+      "Magnetpulver",
+      "Wirbelstrom",
+      "Sonstiges"
+    ],
+    "processes": [
+      "Messraum",
+      "Fertigung",
+      "Härterei",
+      "Montage",
+      "Eingangskontrolle",
+      "Warenausgang",
+      "Labor",
+      "Sonstiges"
+    ],
+    "errorTypes": [
+      "Risse",
+      "Störung",
+      "Kalibrierungsfehler",
+      "Ausfall",
+      "Sonstiges"
+    ],
+    "horizons": [
+      "kurzfristig",
+      "langfristig"
+    ],
+    "topicCategories": [
+      "MSA",
+      "MFU",
+      "Kalibrierung",
+      "Messmittelinvestition",
+      "Schulung",
+      "Digitalisierung",
+      "Normierung",
+      "Sonstiges"
+    ]
+  }
 }
