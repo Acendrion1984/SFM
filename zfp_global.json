@@ -7,8 +7,8 @@
       "Optimierung",
       "Defekt",
       "Kalibrierung",
-      "MSA",
-      "MFU",
+      "ZfP Anlage",
+      "ZfP Prüfung",
       "Sonstiges"
     ],
     "inspectionMethods": [
@@ -45,8 +45,23 @@
       "Schulung",
       "Digitalisierung",
       "Normierung",
-      "Sonstiges"
+      "Prüfprozessoptimierung"
     ]
   },
-  "lastUpdated": "2026-03-23T21:28:27.565Z"
+  "dashboardData": {
+    "safety": {
+      "accidents": [],
+      "totalAccidents": 0
+    },
+    "pmu": {
+      "completedLots": 0,
+      "openLots": [],
+      "overdue": 0
+    },
+    "audits": {
+      "planned": [],
+      "completed": []
+    }
+  },
+  "lastUpdated": "2026-03-23T21:49:16.497Z"
 }
