@@ -399,7 +399,7 @@
                 const entries = pmuData[area.id] || [];
                 const latest = [...entries].sort((a,b) => (b.year*53+b.week) - (a.year*53+a.week))[0];
                 const currentValue = latest ? (latest.value !== null && latest.value !== undefined ? latest.value : '–') : 0;
-                const isGood = typeof currentValue === 'number' && currentValue >= PMU_TARGET;
+                const isGood = pmuIsGood(area.id, typeof currentValue === 'number' ? currentValue : null);
                 html += `<div class="stat-item-pmu"><div class="stat-number-pmu ${isGood ? 'good' : 'bad'}">${currentValue !== '–' ? currentValue + '%' : '–'}</div><div class="stat-label-pmu">${area.name}</div>${latest ? `<div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">KW ${latest.week}/${latest.year}</div>` : '<div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Keine Daten</div>'}</div>`;
             });
             container.innerHTML = html;
@@ -457,7 +457,7 @@
                 let row = `<tr><td>${entry.year}</td><td><strong>KW ${entry.week}</strong></td>`;
                 PMU_AREAS.forEach(area => {
                     let val = (entry.values[area.id] !== undefined && entry.values[area.id] !== null) ? entry.values[area.id] : '';
-                    let isGood = val !== '' && parseFloat(val) >= PMU_TARGET;
+                    let isGood = val !== '' && pmuIsGood(area.id, parseFloat(val));
                     row += `<td><input type="number" step="0.1" min="0" max="100" value="${val}" placeholder="—" data-area="${area.id}" data-year="${entry.year}" data-week="${entry.week}" style="width:80px;text-align:center;${val!==''?(isGood?'color:var(--pmu-good);font-weight:bold':'color:var(--pmu-bad);font-weight:bold'):''}" oninput="previewPMUColor(this)"></td>`;
                 });
                 row += `<td><button class="action-button delete" style="min-width:unset;padding:6px 10px;" onclick="deletePMUWeek(${entry.year},${entry.week})"><i class="fas fa-trash"></i></button></td></tr>`;
@@ -490,7 +490,8 @@
             if(val === '') { inp.style.color = ''; inp.style.fontWeight = ''; return; }
             const num = parseFloat(val);
             if(!isNaN(num)) {
-                inp.style.color      = num >= PMU_TARGET ? 'var(--pmu-good)' : 'var(--pmu-bad)';
+                const areaId = inp.dataset.area || '';
+                inp.style.color = pmuIsGood(areaId, num) ? 'var(--pmu-good)' : 'var(--pmu-bad)';
                 inp.style.fontWeight = 'bold';
             }
         }
@@ -548,7 +549,7 @@
                 if(auditData.planned.length===0 && auditData.completed.length===0){ preview.innerHTML='<div class="empty-state" style="padding:20px;"><i class="fas fa-calendar-alt"></i><p>Keine Audits</p></div>'; return; }
                 let html='';
                 const next3 = [...auditData.planned].sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3);
-                next3.forEach(a=>{ html+=`<div class="audit-item-preview" onclick="showAuditDetail('${a.id}')"><span><i class="fas fa-calendar"></i> ${escapeHtml(a.name)}</span><span class="date">${new Date(a.date).toLocaleDateString('de-DE')}</span><span class="audit-badge">${a.deviationCount||0} Abw.</span></div>`; });
+                next3.forEach(a=>{ html+=`<div class="audit-item-preview" onclick="showAuditDetail('${a.id}')"><span><i class="fas fa-calendar"></i> ${escapeHtml(a.name)}</span><span class="date">${new Date(a.date).toLocaleDateString('de-DE')}</span></div>`; });
                 const last2 = [...auditData.completed].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,2);
                 last2.forEach(a=>{ html+=`<div class="audit-item-preview" onclick="showAuditDetail('${a.id}')"><span><i class="fas fa-check-circle"></i> ${escapeHtml(a.name)}</span><span class="date">${new Date(a.date).toLocaleDateString('de-DE')}</span><span class="audit-badge completed">${a.deviationCount||0} Abw.</span></div>`; });
                 preview.innerHTML=html;
@@ -556,7 +557,7 @@
         }
         function openAuditModal() {
             const container = document.getElementById('auditModalBody');
-            container.innerHTML = `<div class="form-section"><h3><i class="fas fa-plus-circle"></i> Neues Audit erfassen</h3><div class="form-row"><div class="form-group"><label>Audit-Name *</label><input type="text" id="new-audit-name"></div><div class="form-group"><label>Datum *</label><input type="date" id="new-audit-date"></div></div><div class="form-row"><div class="form-group"><label>Prüfer</label><input type="text" id="new-audit-auditor"></div><div class="form-group"><label>Anzahl Abweichungen</label><input type="number" id="new-audit-deviations" min="0" value="0"></div></div><div class="form-group full-width"><label>Kurze Erklärung / Beschreibung</label><textarea id="new-audit-description" rows="3" placeholder="Was wurde geprüft? Welche Feststellungen gab es? ..."></textarea></div><div class="form-row"><div class="form-group"><label>Status</label><select id="new-audit-status"><option value="planned">Geplant</option><option value="completed">Durchgeführt</option></select></div></div><button class="btn btn-success" onclick="addAudit()">Audit hinzufügen</button></div>
+            container.innerHTML = `<div class="form-section"><h3><i class="fas fa-plus-circle"></i> Neues Audit erfassen</h3><div class="form-row"><div class="form-group"><label>Audit-Name *</label><input type="text" id="new-audit-name"></div><div class="form-group"><label>Datum *</label><input type="date" id="new-audit-date"></div></div><div class="form-row"><div class="form-group"><label>Prüfer</label><input type="text" id="new-audit-auditor"></div><div class="form-group"><label>Status</label><select id="new-audit-status" onchange="toggleAuditDeviations()"><option value="planned">Geplant</option><option value="completed">Durchgeführt</option></select></div></div><div class="form-group full-width"><label>Kurze Erklärung / Beschreibung</label><textarea id="new-audit-description" rows="3" placeholder="Was wurde geprüft? Welche Feststellungen gab es? ..."></textarea></div><div class="form-group" id="new-audit-deviations-group" style="display:none;"><label>Anzahl Abweichungen</label><input type="number" id="new-audit-deviations" min="0" value="0"></div><button class="btn btn-success" onclick="addAudit()">Audit hinzufügen</button></div>
             <div class="form-section"><h3><i class="fas fa-list"></i> Geplante Audits</h3><div id="planned-audits-list"></div></div>
             <div class="form-section"><h3><i class="fas fa-check-circle"></i> Durchgeführte Audits</h3><div id="completed-audits-list"></div></div>`;
             renderAuditLists();
@@ -567,17 +568,22 @@
             const completedContainer = document.getElementById('completed-audits-list');
             if(!plannedContainer||!completedContainer) return;
             if(auditData.planned.length===0) plannedContainer.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>Keine geplanten Audits</p></div>';
-            else plannedContainer.innerHTML = [...auditData.planned].sort((a,b)=>new Date(a.date)-new Date(b.date)).map(a => `<div class="incident-card"><div class="card-header"><div class="card-badges"><span class="badge badge-warning">📅 Geplant</span><span class="badge">${a.deviationCount||0} Abweichungen</span></div><div class="card-date">${new Date(a.date).toLocaleDateString('de-DE')}</div></div><div class="card-content"><div class="info-row"><span class="info-label">Name:</span><span class="info-value">${escapeHtml(a.name)}</span></div><div class="info-row"><span class="info-label">Prüfer:</span><span class="info-value">${escapeHtml(a.auditor||'—')}</span></div><div class="info-row"><span class="info-label">Beschreibung:</span><span class="info-value">${escapeHtml((a.description||'').substring(0,100))}</span></div></div><div class="card-actions"><button class="action-button close" onclick="completeAudit('${a.id}')"><i class="fas fa-check"></i> Als durchgeführt</button><button class="action-button edit" onclick="editAudit('${a.id}')"><i class="fas fa-edit"></i> Bearbeiten</button><button class="action-button delete" onclick="deleteAudit('${a.id}','planned')"><i class="fas fa-trash"></i> Löschen</button></div></div>`).join('');
+            else plannedContainer.innerHTML = [...auditData.planned].sort((a,b)=>new Date(a.date)-new Date(b.date)).map(a => `<div class="incident-card"><div class="card-header"><div class="card-badges"><span class="badge badge-warning">📅 Geplant</span></div><div class="card-date">${new Date(a.date).toLocaleDateString('de-DE')}</div></div><div class="card-content"><div class="info-row"><span class="info-label">Name:</span><span class="info-value">${escapeHtml(a.name)}</span></div><div class="info-row"><span class="info-label">Prüfer:</span><span class="info-value">${escapeHtml(a.auditor||'—')}</span></div><div class="info-row"><span class="info-label">Beschreibung:</span><span class="info-value">${escapeHtml((a.description||'').substring(0,100))}</span></div></div><div class="card-actions"><button class="action-button close" onclick="completeAudit('${a.id}')"><i class="fas fa-check"></i> Als durchgeführt</button><button class="action-button edit" onclick="editAudit('${a.id}')"><i class="fas fa-edit"></i> Bearbeiten</button><button class="action-button delete" onclick="deleteAudit('${a.id}','planned')"><i class="fas fa-trash"></i> Löschen</button></div></div>`).join('');
             if(auditData.completed.length===0) completedContainer.innerHTML='<div class="empty-state"><i class="fas fa-clipboard-check"></i><p>Keine durchgeführten Audits</p></div>';
             else completedContainer.innerHTML = [...auditData.completed].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(a => `<div class="incident-card"><div class="card-header"><div class="card-badges"><span class="badge badge-success">✅ Durchgeführt</span><span class="badge">${a.deviationCount||0} Abweichungen</span></div><div class="card-date">${new Date(a.date).toLocaleDateString('de-DE')}</div></div><div class="card-content"><div class="info-row"><span class="info-label">Name:</span><span class="info-value">${escapeHtml(a.name)}</span></div><div class="info-row"><span class="info-label">Prüfer:</span><span class="info-value">${escapeHtml(a.auditor||'—')}</span></div><div class="info-row"><span class="info-label">Beschreibung:</span><span class="info-value">${escapeHtml((a.description||'').substring(0,100))}</span></div></div><div class="card-actions"><button class="action-button edit" onclick="editAudit('${a.id}')"><i class="fas fa-edit"></i> Bearbeiten</button><button class="action-button delete" onclick="deleteAudit('${a.id}','completed')"><i class="fas fa-trash"></i> Löschen</button></div></div>`).join('');
+        }
+        function toggleAuditDeviations() {
+            const status = document.getElementById('new-audit-status')?.value;
+            const group = document.getElementById('new-audit-deviations-group');
+            if(group) group.style.display = status === 'completed' ? '' : 'none';
         }
         function addAudit() {
             const name = document.getElementById('new-audit-name').value.trim();
             const date = document.getElementById('new-audit-date').value;
             const auditor = document.getElementById('new-audit-auditor').value.trim();
-            const deviationCount = parseInt(document.getElementById('new-audit-deviations').value) || 0;
             const description = document.getElementById('new-audit-description').value.trim();
             const status = document.getElementById('new-audit-status').value;
+            const deviationCount = status === 'completed' ? (parseInt(document.getElementById('new-audit-deviations').value) || 0) : null;
             if(!name||!date){ toast('Bitte Name und Datum','error'); return; }
             const audit = { id: genId(), name, date, auditor: auditor||'—', deviationCount, description: description||'Keine Beschreibung', createdAt: new Date().toISOString() };
             if(status==='planned') auditData.planned.push(audit);
@@ -590,10 +596,16 @@
         function editAudit(id) {
             let audit = auditData.planned.find(a=>a.id===id) || auditData.completed.find(a=>a.id===id);
             if(!audit) return;
+            const isCompleted = !!auditData.completed.find(a=>a.id===id);
             const newName = prompt('Audit-Name:', audit.name);
             if(newName !== null && newName.trim()) audit.name = newName.trim();
-            const newDeviations = prompt('Anzahl Abweichungen:', audit.deviationCount);
-            if(newDeviations !== null && !isNaN(parseInt(newDeviations))) audit.deviationCount = parseInt(newDeviations);
+            // Abweichungen nur bei abgeschlossenen Audits bearbeitbar
+            if(isCompleted) {
+                const newDeviations = prompt('Anzahl Abweichungen:', audit.deviationCount ?? 0);
+                if(newDeviations !== null && !isNaN(parseInt(newDeviations))) audit.deviationCount = parseInt(newDeviations);
+            } else {
+                audit.deviationCount = null; // Geplante Audits haben keine Abweichungen
+            }
             const newDesc = prompt('Kurze Erklärung:', audit.description);
             if(newDesc !== null) audit.description = newDesc;
             saveAuditData();
@@ -603,11 +615,14 @@
         function completeAudit(id) {
             const audit = auditData.planned.find(a=>a.id===id);
             if(audit){
+                const devInput = prompt('Anzahl Abweichungen für dieses Audit:', '0');
+                if(devInput === null) return; // Abbrechen
+                audit.deviationCount = !isNaN(parseInt(devInput)) ? parseInt(devInput) : 0;
                 auditData.planned = auditData.planned.filter(a=>a.id!==id);
                 auditData.completed.push(audit);
                 saveAuditData();
                 renderAuditLists();
-                toast('Audit als durchgeführt markiert');
+                toast('Audit abgeschlossen – ' + audit.deviationCount + ' Abweichung(en) erfasst');
             }
         }
         function deleteAudit(id, type) {
@@ -626,7 +641,7 @@
                     <div class="detail-item"><div class="detail-label">Name</div><div class="detail-value">${escapeHtml(audit.name)}</div></div>
                     <div class="detail-item"><div class="detail-label">Datum</div><div class="detail-value">${new Date(audit.date).toLocaleDateString('de-DE')}</div></div>
                     <div class="detail-item"><div class="detail-label">Prüfer</div><div class="detail-value">${escapeHtml(audit.auditor)}</div></div>
-                    <div class="detail-item"><div class="detail-label">Abweichungen</div><div class="detail-value">${audit.deviationCount||0}</div></div>
+                    ${auditData.completed.find(a=>a.id===id) ? `<div class="detail-item"><div class="detail-label">Abweichungen</div><div class="detail-value">${audit.deviationCount ?? 0}</div></div>` : ''}
                     <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value">${auditData.completed.find(a=>a.id===id) ? '✅ Durchgeführt' : '📅 Geplant'}</div></div>
                 </div>
                 <div class="form-section"><h3><i class="fas fa-info-circle"></i> Erklärung / Beschreibung</h3><div style="background:var(--hover-bg);padding:15px;border-radius:12px;">${escapeHtml(audit.description||'Keine Beschreibung vorhanden')}</div></div>
