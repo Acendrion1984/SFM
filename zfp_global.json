@@ -236,8 +236,18 @@
     "accidents": []
   },
   "auditData": {
-    "planned": [],
+    "planned": [
+      {
+        "id": "1774359953939_b4uecof7",
+        "name": "PRI/TPG Audit",
+        "date": "2027-06-30",
+        "auditor": "Extern",
+        "deviationCount": null,
+        "description": "4 ZfP Verfahren + Personalqualifikation & PMÜ ZfP Themen",
+        "createdAt": "2026-03-24T13:45:53.939Z"
+      }
+    ],
     "completed": []
   },
-  "lastUpdated": "2026-03-24T13:28:48.770Z"
+  "lastUpdated": "2026-03-24T13:45:55.953Z"
 }
