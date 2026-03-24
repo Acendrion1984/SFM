@@ -206,7 +206,7 @@
             <div class="dashboard-card" onclick="openPMUModal()">
                 <h3><i class="fas fa-chart-line"></i> PMÜ - Prüfmittelquote</h3>
                 <div class="stats" id="pmuDashboardStats"></div>
-                <div style="margin-top:10px; font-size:12px; text-align:center;">Ziel: ≥85% | Klick für monatliche Erfassung</div>
+                <div style="margin-top:10px; font-size:12px; text-align:center;">Ziel: ≥85% | Klick für wöchentliche Erfassung (KW)</div>
             </div>
             <div class="dashboard-card" onclick="openAuditModal()">
                 <h3><i class="fas fa-clipboard-list"></i> Audits</h3>
@@ -233,7 +233,7 @@
 
     <!-- Modals -->
     <div id="dropdownAdminModal" class="modal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-sliders-h"></i> Dropdown-Listen anpassen</h2><button onclick="closeModal('dropdownAdminModal')">&times;</button></div><div class="modal-body" id="dropdownAdminBody"></div><div class="modal-footer"><button class="btn btn-success" onclick="saveAllDropdowns()"><i class="fas fa-save"></i> Alle speichern</button><button class="btn" onclick="closeModal('dropdownAdminModal')">Schließen</button></div></div></div>
-    <div id="pmuModal" class="modal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-chart-line"></i> PMÜ - Prüfmittelquote (monatliche Erfassung)</h2><button onclick="closeModal('pmuModal')">&times;</button></div><div class="modal-body" id="pmuModalBody"></div><div class="modal-footer"><button class="btn btn-success" onclick="saveAllPMUData()"><i class="fas fa-save"></i> Alle Änderungen speichern</button><button class="btn" onclick="closeModal('pmuModal')">Schließen</button></div></div></div>
+    <div id="pmuModal" class="modal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-chart-line"></i> PMÜ - Prüfmittelquote (wöchentliche Erfassung / KW)</h2><button onclick="closeModal('pmuModal')">&times;</button></div><div class="modal-body" id="pmuModalBody"></div><div class="modal-footer"><button class="btn btn-success" onclick="saveAllPMUData()"><i class="fas fa-save"></i> Alle Änderungen speichern</button><button class="btn" onclick="closeModal('pmuModal')">Schließen</button></div></div></div>
     <div id="safetyModal" class="modal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-hard-hat"></i> Arbeitssicherheit</h2><button onclick="closeModal('safetyModal')">&times;</button></div><div class="modal-body" id="safetyModalBody"></div></div></div>
     <div id="auditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-clipboard-list"></i> Audits verwalten</h2><button onclick="closeModal('auditModal')">&times;</button></div><div class="modal-body" id="auditModalBody"></div><div class="modal-footer"><button class="btn btn-success" onclick="saveAuditData()"><i class="fas fa-save"></i> Speichern</button><button class="btn" onclick="closeModal('auditModal')">Schließen</button></div></div></div>
     <div id="auditDetailModal" class="modal"><div class="modal-content"><div class="modal-header"><h2 id="auditDetailTitle">Audit Details</h2><button onclick="closeModal('auditDetailModal')">&times;</button></div><div class="modal-body" id="auditDetailBody"></div><div class="modal-footer"><button class="btn" onclick="closeModal('auditDetailModal')">Schließen</button></div></div></div>
@@ -253,13 +253,13 @@
         // Farbzuordnung für Mitarbeiter (7 Farben)
         const USER_COLORS = { 1: 'user-tab-color-1', 2: 'user-tab-color-2', 3: 'user-tab-color-3', 4: 'user-tab-color-4', 5: 'user-tab-color-5', 6: 'user-tab-color-6', 7: 'user-tab-color-7' };
 
-        // ==================== PMÜ DATEN (monatsweise) ====================
-        // Struktur: { "0200_E1": [{year, month, value}], "0200_E2": [...], "Werk2_E1": [...], "Werk2_E2": [...] }
+        // ==================== PMÜ DATEN (wochenweise / KW) ====================
+        // Struktur: { "0200_E1": [{year, week, value}], "0200_E2": [...], "Werk2_E1": [...], "Werk2_E2": [...] }
         let pmuData = {
-            '0200_E1': [{ year: 2026, month: 3, value: 100 }, { year: 2026, month: 2, value: 70.8 }, { year: 2026, month: 1, value: 65.1 }, { year: 2025, month: 12, value: 17.4 }, { year: 2025, month: 11, value: 95.7 }, { year: 2025, month: 10, value: 84.8 }],
-            '0200_E2': [{ year: 2026, month: 1, value: 99.5 }, { year: 2025, month: 12, value: 100 }, { year: 2025, month: 11, value: 100 }, { year: 2025, month: 10, value: 100 }],
-            'Werk2_E1': [{ year: 2026, month: 3, value: 97.0 }, { year: 2026, month: 2, value: 92.3 }, { year: 2026, month: 1, value: 91.8 }, { year: 2025, month: 12, value: 93.7 }, { year: 2025, month: 11, value: 94.6 }, { year: 2025, month: 10, value: 88.1 }],
-            'Werk2_E2': [{ year: 2026, month: 1, value: 100 }, { year: 2025, month: 12, value: 100 }, { year: 2025, month: 11, value: 100 }, { year: 2025, month: 10, value: 100 }]
+            '0200_E1': [{ year: 2026, week: 12, value: 100 }, { year: 2026, week: 8, value: 70.8 }, { year: 2026, week: 4, value: 65.1 }, { year: 2025, week: 50, value: 17.4 }, { year: 2025, week: 46, value: 95.7 }, { year: 2025, week: 42, value: 84.8 }],
+            '0200_E2': [{ year: 2026, week: 4, value: 99.5 }, { year: 2025, week: 50, value: 100 }, { year: 2025, week: 46, value: 100 }, { year: 2025, week: 42, value: 100 }],
+            'Werk2_E1': [{ year: 2026, week: 12, value: 97.0 }, { year: 2026, week: 8, value: 92.3 }, { year: 2026, week: 4, value: 91.8 }, { year: 2025, week: 50, value: 93.7 }, { year: 2025, week: 46, value: 94.6 }, { year: 2025, week: 42, value: 88.1 }],
+            'Werk2_E2': [{ year: 2026, week: 4, value: 100 }, { year: 2025, week: 50, value: 100 }, { year: 2025, week: 46, value: 100 }, { year: 2025, week: 42, value: 100 }]
         };
         const PMU_TARGET = 85;
         const PMU_AREAS = [
@@ -303,77 +303,119 @@
         function showLightbox(imageUrl, caption = '') { document.getElementById('lightboxImage').src = imageUrl; document.getElementById('lightboxCaption').innerHTML = caption; document.getElementById('lightboxModal').classList.add('active'); }
         function renderSelectOptions(key, selected = '') { const opts = DROPDOWN_OPTIONS[key]||[]; let html = '<option value="">— wählen —</option>'; opts.forEach(o => html += `<option value="${o.replace(/"/g,'&quot;')}" ${selected===o?'selected':''}>${escapeHtml(o)}</option>`); return html; }
 
-        // ==================== PMÜ FUNKTIONEN ====================
-        function loadPMUData() { const saved = localStorage.getItem('pmu_data'); if(saved) { try { const data = JSON.parse(saved); PMU_AREAS.forEach(area => { if(data[area.id]) pmuData[area.id] = data[area.id]; }); } catch(e) {} } updatePMUDashboard(); }
-        function savePMUData() { localStorage.setItem('pmu_data', JSON.stringify(pmuData)); updatePMUDashboard(); scheduleAutoSave(); }
+        // ==================== PMÜ FUNKTIONEN (wöchentlich / KW) ====================
+        function getCurrentYearWeek() {
+            const d = new Date(); d.setHours(0,0,0,0);
+            d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+            const week1 = new Date(d.getFullYear(), 0, 4);
+            const week = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+            return { year: d.getFullYear(), week };
+        }
+        function maxWeeksInYear(year) {
+            const dec28 = new Date(year, 11, 28); dec28.setDate(dec28.getDate() + 3 - (dec28.getDay() + 6) % 7);
+            const week1 = new Date(dec28.getFullYear(), 0, 4);
+            return 1 + Math.round(((dec28.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+        }
+        function loadPMUData() {
+            const saved = localStorage.getItem('pmu_data_v2');
+            if(saved) { try { const data = JSON.parse(saved); PMU_AREAS.forEach(area => { if(data[area.id]) pmuData[area.id] = data[area.id]; }); } catch(e) {} }
+            updatePMUDashboard();
+        }
+        function savePMUData() { localStorage.setItem('pmu_data_v2', JSON.stringify(pmuData)); updatePMUDashboard(); scheduleAutoSave(); }
         function updatePMUDashboard() {
             const container = document.getElementById('pmuDashboardStats'); if(!container) return;
             let html = '';
             PMU_AREAS.forEach(area => {
                 const entries = pmuData[area.id] || [];
-                const latest = entries.sort((a,b) => (b.year*12+b.month) - (a.year*12+a.month))[0];
-                const currentValue = latest ? latest.value : 0;
-                const isGood = currentValue >= PMU_TARGET;
-                html += `<div class="stat-item-pmu"><div class="stat-number-pmu ${isGood ? 'good' : 'bad'}">${currentValue}%</div><div class="stat-label-pmu">${area.name}</div>${latest ? `<div class="stat-badge ${isGood ? 'success' : 'danger'}">${latest.month}/${latest.year}</div>` : '<div class="stat-badge warning">Keine Daten</div>'}</div>`;
+                const latest = [...entries].sort((a,b) => (b.year*53+b.week) - (a.year*53+a.week))[0];
+                const currentValue = latest ? (latest.value !== null && latest.value !== undefined ? latest.value : '–') : 0;
+                const isGood = typeof currentValue === 'number' && currentValue >= PMU_TARGET;
+                html += `<div class="stat-item-pmu"><div class="stat-number-pmu ${isGood ? 'good' : 'bad'}">${currentValue !== '–' ? currentValue + '%' : '–'}</div><div class="stat-label-pmu">${area.name}</div>${latest ? `<div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">KW ${latest.week}/${latest.year}</div>` : '<div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Keine Daten</div>'}</div>`;
             });
             container.innerHTML = html;
         }
         function openPMUModal() {
             const container = document.getElementById('pmuModalBody');
-            const currentYM = getCurrentYearMonth();
+            const curYW = getCurrentYearWeek();
             let years = new Set();
             PMU_AREAS.forEach(area => { (pmuData[area.id] || []).forEach(e => years.add(e.year)); });
+            years.add(curYW.year);
             let sortedYears = Array.from(years).sort((a,b)=>b-a);
-            if(sortedYears.length === 0) sortedYears = [currentYM.year];
-            
-            let html = `<div class="form-section"><h3><i class="fas fa-plus-circle"></i> Neuen Monat erfassen</h3><div class="form-row"><div class="form-group"><label>Jahr</label><select id="new-pmu-year">${sortedYears.map(y => `<option value="${y}" ${y===currentYM.year?'selected':''}>${y}</option>`).join('')}<option value="neu">Neues Jahr...</option></select></div><div class="form-group"><label>Monat</label><select id="new-pmu-month">${Array.from({length:12},(_,i)=>i+1).map(m => `<option value="${m}" ${m===currentYM.month?'selected':''}>${m}. Monat</option>`).join('')}</select></div></div><button class="btn btn-success" onclick="addNewPMUMonth()"><i class="fas fa-plus"></i> Neuen Monat hinzufügen</button></div>`;
-            
-            html += `<div class="form-section"><h3><i class="fas fa-table"></i> Monatliche PMÜ-Statistik</h3><table class="pmu-history-table"><thead><tr><th>Jahr</th><th>Monat</th>`;
+            const maxW = maxWeeksInYear(curYW.year);
+            let weekOptions = Array.from({length: maxW}, (_,i) => i+1).map(w => `<option value="${w}" ${w===curYW.week?'selected':''}>KW ${w}</option>`).join('');
+            let html = `<div class="form-section"><h3><i class="fas fa-plus-circle"></i> Neue Kalenderwoche erfassen</h3>
+                <div class="form-row">
+                  <div class="form-group"><label><i class="fas fa-calendar-alt"></i> Jahr</label>
+                    <select id="new-pmu-year" onchange="updateWeekOptions()">${sortedYears.map(y=>`<option value="${y}" ${y===curYW.year?'selected':''}>${y}</option>`).join('')}<option value="neu">Neues Jahr…</option></select>
+                  </div>
+                  <div class="form-group"><label><i class="fas fa-calendar-week"></i> Kalenderwoche</label>
+                    <select id="new-pmu-week">${weekOptions}</select>
+                  </div>
+                </div>
+                <button class="btn btn-success" onclick="addNewPMUWeek()"><i class="fas fa-plus"></i> Neue KW hinzufügen</button>
+            </div>`;
+            html += `<div class="form-section"><h3><i class="fas fa-table"></i> Wöchentliche PMÜ-Statistik</h3>
+                <table class="pmu-history-table"><thead><tr><th>Jahr</th><th>KW</th>`;
             PMU_AREAS.forEach(area => html += `<th>${area.name}</th>`);
-            html += `</tr></thead><tbody id="pmu-table-body"></tbody></table></div>`;
+            html += `<th>Aktion</th></tr></thead><tbody id="pmu-table-body"></tbody></table></div>`;
             container.innerHTML = html;
             renderPMUTable();
             document.getElementById('pmuModal').classList.add('active');
+        }
+        function updateWeekOptions() {
+            const yearSelect = document.getElementById('new-pmu-year');
+            const weekSelect = document.getElementById('new-pmu-week');
+            if(!yearSelect || !weekSelect) return;
+            let year = yearSelect.value === 'neu' ? new Date().getFullYear() : parseInt(yearSelect.value);
+            const maxW = maxWeeksInYear(year);
+            weekSelect.innerHTML = Array.from({length: maxW}, (_,i) => i+1).map(w => `<option value="${w}">KW ${w}</option>`).join('');
         }
         function renderPMUTable() {
             const tbody = document.getElementById('pmu-table-body'); if(!tbody) return;
             let allEntries = [];
             PMU_AREAS.forEach(area => {
                 (pmuData[area.id] || []).forEach(entry => {
-                    let key = `${entry.year}-${entry.month}`;
+                    let key = `${entry.year}-W${String(entry.week).padStart(2,'0')}`;
                     let existing = allEntries.find(e => e.key === key);
-                    if(!existing) { existing = { key, year: entry.year, month: entry.month, values: {} }; allEntries.push(existing); }
+                    if(!existing) { existing = { key, year: entry.year, week: entry.week, values: {} }; allEntries.push(existing); }
                     existing.values[area.id] = entry.value;
                 });
             });
-            allEntries.sort((a,b) => (b.year*12+b.month) - (a.year*12+a.month));
-            if(allEntries.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Keine Daten vorhanden</td></tr>'; return; }
+            allEntries.sort((a,b) => (b.year*53+b.week) - (a.year*53+a.week));
+            if(allEntries.length === 0) { tbody.innerHTML = `<tr><td colspan="${PMU_AREAS.length+3}" style="text-align:center;padding:20px;color:var(--text-secondary);">Keine Daten – bitte KW hinzufügen</td></tr>`; return; }
             tbody.innerHTML = allEntries.map(entry => {
-                let row = `<tr><td>${entry.year}</td><td>${entry.month}</td>`;
+                let row = `<tr><td>${entry.year}</td><td><strong>KW ${entry.week}</strong></td>`;
                 PMU_AREAS.forEach(area => {
-                    let val = entry.values[area.id] !== undefined ? entry.values[area.id] : '';
-                    let isGood = val !== '' && val >= PMU_TARGET;
-                    row += `<td><input type="number" step="0.1" min="0" max="100" value="${val}" style="width:80px;text-align:center;${val!==''?(isGood?'color:var(--pmu-good);font-weight:bold':'color:var(--pmu-bad);font-weight:bold'):''}" onchange="updatePMUValue('${area.id}',${entry.year},${entry.month},this.value)"></td>`;
+                    let val = (entry.values[area.id] !== undefined && entry.values[area.id] !== null) ? entry.values[area.id] : '';
+                    let isGood = val !== '' && parseFloat(val) >= PMU_TARGET;
+                    row += `<td><input type="number" step="0.1" min="0" max="100" value="${val}" placeholder="—" style="width:80px;text-align:center;${val!==''?(isGood?'color:var(--pmu-good);font-weight:bold':'color:var(--pmu-bad);font-weight:bold'):''}" onchange="updatePMUValue('${area.id}',${entry.year},${entry.week},this.value)"></td>`;
                 });
-                row += `</tr>`;
+                row += `<td><button class="action-button delete" style="min-width:unset;padding:6px 10px;" onclick="deletePMUWeek(${entry.year},${entry.week})"><i class="fas fa-trash"></i></button></td></tr>`;
                 return row;
             }).join('');
         }
-        function updatePMUValue(areaId, year, month, value) {
-            let numValue = value === '' ? null : parseFloat(value);
+        function updatePMUValue(areaId, year, week, value) {
+            let numValue = (value === '' || value === null) ? null : parseFloat(value);
             let entries = pmuData[areaId] || [];
-            let existingIndex = entries.findIndex(e => e.year === year && e.month === month);
+            let existingIndex = entries.findIndex(e => e.year === year && e.week === week);
             if(existingIndex !== -1) {
-                if(numValue === null || isNaN(numValue)) entries.splice(existingIndex,1);
+                if(numValue === null || isNaN(numValue)) entries[existingIndex].value = null;
                 else entries[existingIndex].value = numValue;
-            } else if(numValue !== null && !isNaN(numValue)) {
-                entries.push({ year, month, value: numValue });
+            } else {
+                entries.push({ year, week, value: numValue });
             }
             pmuData[areaId] = entries;
             savePMUData();
             renderPMUTable();
         }
-        function addNewPMUMonth() {
+        function deletePMUWeek(year, week) {
+            if(!confirm(`KW ${week}/${year} für alle Bereiche löschen?`)) return;
+            PMU_AREAS.forEach(area => {
+                pmuData[area.id] = (pmuData[area.id] || []).filter(e => !(e.year === year && e.week === week));
+            });
+            savePMUData(); renderPMUTable(); toast(`KW ${week}/${year} gelöscht`);
+        }
+        function addNewPMUWeek() {
             let yearSelect = document.getElementById('new-pmu-year');
             let year = yearSelect.value;
             if(year === 'neu') {
@@ -381,13 +423,21 @@
                 if(newYear && !isNaN(parseInt(newYear))) year = parseInt(newYear);
                 else return;
             } else year = parseInt(year);
-            let month = parseInt(document.getElementById('new-pmu-month').value);
-            let existing = false;
-            PMU_AREAS.forEach(area => { if(pmuData[area.id]?.some(e => e.year === year && e.month === month)) existing = true; });
-            if(existing) { toast('Dieser Monat existiert bereits!', 'error'); return; }
-            PMU_AREAS.forEach(area => { pmuData[area.id] = pmuData[area.id] || []; });
+            let week = parseInt(document.getElementById('new-pmu-week').value);
+            if(isNaN(week) || week < 1 || week > 53) { toast('Ungültige Kalenderwoche!', 'error'); return; }
+            // Prüfe ob KW bereits vollständig existiert (alle Bereiche haben Einträge)
+            let alreadyFull = PMU_AREAS.every(area => (pmuData[area.id]||[]).some(e => e.year === year && e.week === week));
+            if(alreadyFull) { toast(`KW ${week}/${year} existiert bereits!`, 'error'); return; }
+            // FIX: Tatsächlich Einträge hinzufügen (mit value=null als Platzhalter)
+            PMU_AREAS.forEach(area => {
+                pmuData[area.id] = pmuData[area.id] || [];
+                if(!pmuData[area.id].some(e => e.year === year && e.week === week)) {
+                    pmuData[area.id].push({ year, week, value: null });
+                }
+            });
+            savePMUData();
             renderPMUTable();
-            toast(`Neuer Monat ${month}/${year} hinzugefügt`);
+            toast(`✅ KW ${week}/${year} hinzugefügt – Werte eintragen!`);
         }
         function saveAllPMUData() { savePMUData(); toast('PMÜ-Daten gespeichert'); closeModal('pmuModal'); }
 
@@ -560,7 +610,7 @@
         function setSyncSaved(){ const el=document.getElementById('syncLastSaved'); if(el) el.textContent='Zuletzt gespeichert: '+new Date().toLocaleTimeString('de-DE'); setSyncStatus('saved','Alle Daten gespeichert ✓'); }
         function scheduleAutoSave(){ localSave(); if(!githubToken) return; const currentData=JSON.stringify({globalIncidents,globalTopics,userTabs,pmuData,safetyData,auditData}); if(currentData===_lastSavedData) return; setSyncStatus('saving','Änderungen erkannt – speichere in 2s…'); clearTimeout(_autoSaveTimer); _autoSaveTimer=setTimeout(()=>performAutoSave(),2000); }
         async function performAutoSave(){ if(_isSyncing){ _pendingSave=true; return; } _isSyncing=true; setSyncStatus('saving','Speichere auf GitHub…'); try{ await _ghSaveGlobal(); await _ghSaveAllUsers(); const currentData=JSON.stringify({globalIncidents,globalTopics,userTabs,pmuData,safetyData,auditData}); _lastSavedData=currentData; setSyncSaved(); }catch(e){ setSyncStatus('error','Fehler: '+e.message); } finally{ _isSyncing=false; if(_pendingSave){ _pendingSave=false; setTimeout(performAutoSave,500); } } }
-        function localSave(){ try{ localStorage.setItem('zfp_global_incidents',JSON.stringify(globalIncidents)); localStorage.setItem('zfp_global_topics',JSON.stringify(globalTopics)); localStorage.setItem('zfp_users',JSON.stringify(userTabs.map(u=>({id:u.id,name:u.name,color:u.color,incidents:u.incidents,topics:u.topics})))); localStorage.setItem('pmu_data',JSON.stringify(pmuData)); localStorage.setItem('safety_data',JSON.stringify(safetyData)); localStorage.setItem('audit_data',JSON.stringify(auditData)); }catch(e){} }
+        function localSave(){ try{ localStorage.setItem('zfp_global_incidents',JSON.stringify(globalIncidents)); localStorage.setItem('zfp_global_topics',JSON.stringify(globalTopics)); localStorage.setItem('zfp_users',JSON.stringify(userTabs.map(u=>({id:u.id,name:u.name,color:u.color,incidents:u.incidents,topics:u.topics})))); localStorage.setItem('pmu_data_v2',JSON.stringify(pmuData)); localStorage.setItem('safety_data',JSON.stringify(safetyData)); localStorage.setItem('audit_data',JSON.stringify(auditData)); }catch(e){} }
         async function callGitHubAPI(endpoint,method='GET',body=null){ if(!githubToken) throw new Error('Kein GitHub Token'); const headers={'Authorization':`token ${githubToken}`,'Accept':'application/vnd.github.v3+json'}; if(body) headers['Content-Type']='application/json'; const response=await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}${endpoint}`,{method,headers,body:body?JSON.stringify(body):null}); if(!response.ok) throw new Error(`GitHub API Error: ${response.status}`); return response.json(); }
         async function getFileSHA(path){ if(_ghShas[path]) return _ghShas[path]; try{ const d=await callGitHubAPI(`/contents/${path}`); _ghShas[path]=d.sha; return d.sha; }catch(e){ return null; } }
         async function _ghPutFile(filename,data,sha){ const content=btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))); const body={message:`Auto-update ${filename} – ${new Date().toISOString()}`,content,branch:'main'}; if(sha) body.sha=sha; const result=await callGitHubAPI(`/contents/${filename}`,'PUT',body); _ghShas[filename]=result.content?.sha||null; return result; }
