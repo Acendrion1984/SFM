@@ -573,42 +573,26 @@
         }
         function updateOption(key, idx, val) {
             DROPDOWN_OPTIONS[key][idx] = val;
-            // Kein sofortiges saveDropdowns() bei jedem Tastendruck – nur bei explizitem Speichern
+            saveDropdowns();
         }
         function deleteOption(key, idx) {
             DROPDOWN_OPTIONS[key].splice(idx, 1);
-            saveDropdownsToStorage();
+            saveDropdowns();
             openDropdownAdminModal();
-            toast(`Option gelöscht`);
         }
         function addOption(key) {
             const v = document.getElementById(`new-${key}`).value.trim();
             if(v) {
                 DROPDOWN_OPTIONS[key].push(v);
-                saveDropdownsToStorage();
+                saveDropdowns();
                 openDropdownAdminModal();
-                toast(`"${v}" hinzugefügt ✓`);
-            } else {
-                toast('Bitte einen Wert eingeben', 'error');
             }
         }
-        function saveDropdownsToStorage() {
+        function saveDropdowns() {
             localStorage.setItem('custom_dropdowns', JSON.stringify(DROPDOWN_OPTIONS));
             refreshAllForms();
             scheduleAutoSave();
-        }
-        function saveDropdowns() {
-            // Aktuelle Eingabewerte aus dem Modal auslesen bevor gespeichert wird
-            const fields = ['categories','inspectionMethods','processes','errorTypes','horizons','topicCategories'];
-            fields.forEach(key => {
-                const listDiv = document.getElementById(`dd-${key}`);
-                if(listDiv) {
-                    const inputs = listDiv.querySelectorAll('input');
-                    DROPDOWN_OPTIONS[key] = Array.from(inputs).map(inp => inp.value.trim()).filter(v => v !== '');
-                }
-            });
-            saveDropdownsToStorage();
-            toast('✅ Alle Dropdowns gespeichert');
+            toast('Dropdowns gespeichert');
         }
         function saveAllDropdowns() {
             saveDropdowns();
