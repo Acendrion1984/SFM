@@ -14,7 +14,7 @@
       "horizon": "kurzfristig",
       "category": "Messmittelinvestition",
       "process": "Sonstiges",
-      "inspection_method": "Wirbelstromprüfung",
+      "inspection_method": "",
       "start_date": "2025-11-01",
       "target_date": "2025-12-31",
       "progress": 100,
@@ -45,5 +45,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-03-23T21:49:17.149Z"
+  "lastUpdated": "2026-03-24T13:47:50.535Z"
 }
