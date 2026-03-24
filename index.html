@@ -387,7 +387,11 @@
             if(saved) { try { const data = JSON.parse(saved); PMU_AREAS.forEach(area => { if(data[area.id]) pmuData[area.id] = data[area.id]; }); } catch(e) {} }
             updatePMUDashboard();
         }
-        function savePMUData() { localStorage.setItem('pmu_data_v2', JSON.stringify(pmuData)); updatePMUDashboard(); scheduleAutoSave(); }
+        function savePMUData() {
+            localStorage.setItem('pmu_data_v2', JSON.stringify(pmuData));
+            updatePMUDashboard();
+            scheduleGlobalSave(); // zum GitHub speichern
+        }
         function updatePMUDashboard() {
             const container = document.getElementById('pmuDashboardStats'); if(!container) return;
             let html = '';
@@ -454,28 +458,45 @@
                 PMU_AREAS.forEach(area => {
                     let val = (entry.values[area.id] !== undefined && entry.values[area.id] !== null) ? entry.values[area.id] : '';
                     let isGood = val !== '' && parseFloat(val) >= PMU_TARGET;
-                    row += `<td><input type="number" step="0.1" min="0" max="100" value="${val}" placeholder="—" style="width:80px;text-align:center;${val!==''?(isGood?'color:var(--pmu-good);font-weight:bold':'color:var(--pmu-bad);font-weight:bold'):''}" onchange="updatePMUValue('${area.id}',${entry.year},${entry.week},this.value)"></td>`;
+                    row += `<td><input type="number" step="0.1" min="0" max="100" value="${val}" placeholder="—" data-area="${area.id}" data-year="${entry.year}" data-week="${entry.week}" style="width:80px;text-align:center;${val!==''?(isGood?'color:var(--pmu-good);font-weight:bold':'color:var(--pmu-bad);font-weight:bold'):''}" oninput="previewPMUColor(this)"></td>`;
                 });
                 row += `<td><button class="action-button delete" style="min-width:unset;padding:6px 10px;" onclick="deletePMUWeek(${entry.year},${entry.week})"><i class="fas fa-trash"></i></button></td></tr>`;
                 return row;
             }).join('');
         }
-        function updatePMUValue(areaId, year, week, value) {
-            let numValue = (value === '' || value === null) ? null : parseFloat(value);
-            let entries = pmuData[areaId] || [];
-            let existingIndex = entries.findIndex(e => e.year === year && e.week === week);
-            if(existingIndex !== -1) {
-                if(numValue === null || isNaN(numValue)) entries[existingIndex].value = null;
-                else entries[existingIndex].value = numValue;
-            } else {
-                entries.push({ year, week, value: numValue });
+        // Liest alle aktuellen Werte aus der PMU-Tabelle in pmuData
+        function readPMUFromDOM() {
+            const tbody = document.getElementById('pmu-table-body');
+            if(!tbody) return;
+            tbody.querySelectorAll('input[data-area]').forEach(inp => {
+                const areaId = inp.dataset.area;
+                const year   = parseInt(inp.dataset.year);
+                const week   = parseInt(inp.dataset.week);
+                const raw    = inp.value.trim();
+                const numVal = (raw === '') ? null : parseFloat(raw);
+                let entries  = pmuData[areaId] || [];
+                const idx    = entries.findIndex(e => e.year === year && e.week === week);
+                if(idx !== -1) {
+                    entries[idx].value = (numVal === null || isNaN(numVal)) ? null : numVal;
+                } else {
+                    entries.push({ year, week, value: (isNaN(numVal) ? null : numVal) });
+                }
+                pmuData[areaId] = entries;
+            });
+        }
+        // Farbe live während der Eingabe aktualisieren (kein Speichern)
+        function previewPMUColor(inp) {
+            const val = inp.value.trim();
+            if(val === '') { inp.style.color = ''; inp.style.fontWeight = ''; return; }
+            const num = parseFloat(val);
+            if(!isNaN(num)) {
+                inp.style.color      = num >= PMU_TARGET ? 'var(--pmu-good)' : 'var(--pmu-bad)';
+                inp.style.fontWeight = 'bold';
             }
-            pmuData[areaId] = entries;
-            savePMUData();
-            renderPMUTable();
         }
         function deletePMUWeek(year, week) {
             if(!confirm(`KW ${week}/${year} für alle Bereiche löschen?`)) return;
+            readPMUFromDOM(); // aktuelle Eingaben sichern
             PMU_AREAS.forEach(area => {
                 pmuData[area.id] = (pmuData[area.id] || []).filter(e => !(e.year === year && e.week === week));
             });
@@ -503,7 +524,34 @@
             renderPMUTable();
             toast(`✅ KW ${week}/${year} hinzugefügt – Werte eintragen!`);
         }
-        function saveAllPMUData() { savePMUData(); toast('PMÜ-Daten gespeichert'); closeModal('pmuModal'); }
+        function saveAllPMUData() {
+            readPMUFromDOM(); // Alle aktuellen Eingaben übernehmen
+            // Lokal speichern
+            localStorage.setItem('pmu_data_v2', JSON.stringify(pmuData));
+            updatePMUDashboard();
+            // Sofort zu GitHub speichern (kein Debounce)
+            if(githubToken) {
+                setSyncStatus('saving', 'PMÜ-Daten werden gespeichert…');
+                _ghPutFile('zfp_global.json', {
+                    version: '2.0',
+                    incidents: globalIncidents,
+                    topics: globalTopics,
+                    pmuData,
+                    safetyData,
+                    auditData,
+                    lastUpdated: new Date().toISOString()
+                }).then(() => {
+                    setSyncSaved();
+                    toast('✅ PMÜ-Daten auf GitHub gespeichert');
+                }).catch(e => {
+                    setSyncStatus('error', 'GitHub-Fehler: ' + e.message);
+                    toast('⚠️ Lokal gespeichert – GitHub-Fehler: ' + e.message, 'error');
+                });
+            } else {
+                toast('PMÜ-Daten lokal gespeichert (kein GitHub-Token)');
+            }
+            closeModal('pmuModal');
+        }
 
         // ==================== ARBEITSSICHERHEIT ====================
         function loadSafetyData() { const saved = localStorage.getItem('safety_data'); if(saved){ try{ safetyData = JSON.parse(saved); }catch(e){} } updateSafetyUI(); }
