@@ -145,10 +145,10 @@
         .pmu-value-bad { color: var(--pmu-bad); font-weight: bold; }
         .dropdown-list { max-height: 300px; overflow-y: auto; border: 2px solid var(--border-color); border-radius: 12px; padding: 10px; margin: 10px 0; }
         .dropdown-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); }
-        .dropdown-item input { flex: 1; margin-right: 10px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-primary); }
+        .dropdown-item input { flex: 1; width: auto; margin-right: 10px; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--text-primary); }
         .dropdown-item button { background: var(--btn-danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         .add-dropdown-item { display: flex; gap: 10px; margin-top: 15px; }
-        .add-dropdown-item input { flex: 1; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; }
+        .add-dropdown-item input { flex: 1; width: auto; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; }
         .add-dropdown-item button { background: var(--btn-success); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
         .toast { position: fixed; bottom: 80px; right: 20px; background: var(--btn-success); color: white; padding: 12px 20px; border-radius: 12px; z-index: 10001; animation: fadeOut 3s forwards; max-width: 320px; font-size: 14px; }
         .toast.error { background: var(--btn-danger); }
@@ -546,7 +546,6 @@
         // ==================== DROPDOWNS ADMIN ====================
         function openDropdownAdminModal() {
             const container = document.getElementById('dropdownAdminBody');
-            let html = '<p style="margin-bottom:15px;"><i class="fas fa-info-circle"></i> Dropdown-Optionen anpassen – Änderungen werden dauerhaft gespeichert:</p>';
             const fields = [
                 {key:'categories',label:'Kategorien'},
                 {key:'inspectionMethods',label:'Messmitteltypen'},
@@ -555,39 +554,59 @@
                 {key:'horizons',label:'Horizonte'},
                 {key:'topicCategories',label:'Themen-Kategorien'}
             ];
+            let html = '<p style="margin-bottom:15px; color:var(--text-secondary);"><i class="fas fa-info-circle"></i> Änderungen erst nach Klick auf <strong>Alle speichern</strong> aktiv.</p>';
             fields.forEach(f => {
-                html += `<h3 style="margin:15px 0 5px;">${f.label}</h3><div class="dropdown-list" id="dd-${f.key}">`;
+                html += `<h3 style="margin:15px 0 5px;">${f.label}</h3>
+                <div class="dropdown-list" id="dd-${f.key}">`;
                 DROPDOWN_OPTIONS[f.key].forEach((opt, idx) => {
                     html += `<div class="dropdown-item">
-                        <input value="${escapeHtml(opt)}" onchange="updateOption('${f.key}',${idx},this.value)">
-                        <button onclick="deleteOption('${f.key}',${idx})"><i class="fas fa-trash"></i></button>
+                        <input type="text" data-key="${f.key}" data-idx="${idx}" value="${escapeHtml(opt)}">
+                        <button onclick="deleteOptionNew('${f.key}',${idx})"><i class="fas fa-trash"></i></button>
                     </div>`;
                 });
-                html += `</div><div class="add-dropdown-item">
-                    <input id="new-${f.key}" placeholder="Neue Option hinzufügen…">
-                    <button onclick="addOption('${f.key}')">+ Hinzufügen</button>
+                html += `</div>
+                <div class="add-dropdown-item">
+                    <input type="text" id="new-${f.key}" placeholder="Neue Option…">
+                    <button onclick="addOptionNew('${f.key}')">+ Hinzufügen</button>
                 </div>`;
             });
             container.innerHTML = html;
             document.getElementById('dropdownAdminModal').classList.add('active');
         }
-        function updateOption(key, idx, val) {
-            DROPDOWN_OPTIONS[key][idx] = val;
-            saveDropdowns();
+        function readDropdownsFromDOM() {
+            // Reads all current input values from the open modal into DROPDOWN_OPTIONS
+            const fields = ['categories','inspectionMethods','processes','errorTypes','horizons','topicCategories'];
+            fields.forEach(key => {
+                const listDiv = document.getElementById('dd-' + key);
+                if(listDiv) {
+                    const inputs = listDiv.querySelectorAll('input[data-key]');
+                    if(inputs.length > 0) {
+                        DROPDOWN_OPTIONS[key] = Array.from(inputs)
+                            .map(inp => inp.value.trim())
+                            .filter(v => v !== '');
+                    }
+                }
+            });
         }
-        function deleteOption(key, idx) {
+        function deleteOptionNew(key, idx) {
+            readDropdownsFromDOM();
             DROPDOWN_OPTIONS[key].splice(idx, 1);
             saveDropdowns();
             openDropdownAdminModal();
         }
-        function addOption(key) {
-            const v = document.getElementById(`new-${key}`).value.trim();
-            if(v) {
-                DROPDOWN_OPTIONS[key].push(v);
-                saveDropdowns();
-                openDropdownAdminModal();
-            }
+        function addOptionNew(key) {
+            const v = document.getElementById('new-' + key).value.trim();
+            if(!v) { toast('Bitte einen Text eingeben', 'error'); return; }
+            readDropdownsFromDOM();
+            DROPDOWN_OPTIONS[key].push(v);
+            saveDropdowns();
+            openDropdownAdminModal();
+            toast('"' + v + '" hinzugefügt ✓');
         }
+        // Legacy stubs (kept for safety)
+        function updateOption(key, idx, val) { /* replaced by readDropdownsFromDOM */ }
+        function deleteOption(key, idx) { deleteOptionNew(key, idx); }
+        function addOption(key) { addOptionNew(key); }
         function saveDropdowns() {
             localStorage.setItem('custom_dropdowns', JSON.stringify(DROPDOWN_OPTIONS));
             refreshAllForms();
@@ -595,8 +614,10 @@
             toast('Dropdowns gespeichert');
         }
         function saveAllDropdowns() {
+            readDropdownsFromDOM();
             saveDropdowns();
             closeModal('dropdownAdminModal');
+            toast('✅ Alle Dropdowns gespeichert');
         }
 
         // ==================== BILD-UPLOAD ====================
