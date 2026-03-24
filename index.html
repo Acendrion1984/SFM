@@ -977,10 +977,47 @@
                 updateAuditUI();
                 localSave();
                 setSyncSaved();
+                startPolling(); // Automatisches Polling starten
                 toast(`✅ Synchronisiert: ${globalIncidents.length} Vorfälle, ${userTabs.length} Mitarbeiter`);
             } catch(e) {
                 setSyncStatus('error', e.message);
             }
+        }
+
+        // --- Auto-Polling: alle 30s von GitHub laden und UI aktualisieren ---
+        let _pollInterval = null;
+        let _lastGlobalEtag = null;
+
+        async function _pollGitHub() {
+            if(!githubToken || _isSavingGlobal) return;
+            try {
+                // Nur laden wenn sich etwas geändert hat (SHA vergleichen)
+                const meta = await callGitHubAPI('/contents/zfp_global.json');
+                if(meta.sha === _ghShas['zfp_global.json']) return; // nichts geändert
+                // Geändert → neu laden
+                _ghShas['zfp_global.json'] = meta.sha;
+                const g = JSON.parse(decodeURIComponent(escape(atob(meta.content))));
+                globalIncidents = g.incidents || [];
+                globalTopics    = g.topics    || [];
+                if(g.pmuData)    pmuData    = g.pmuData;
+                if(g.safetyData) safetyData = g.safetyData;
+                if(g.auditData)  auditData  = g.auditData;
+                renderGlobalIncidents();
+                renderGlobalTopics();
+                updatePMUDashboard();
+                updateSafetyUI();
+                updateAuditUI();
+                localSave();
+                const t = document.getElementById('syncLastSaved');
+                if(t) t.textContent = 'Aktualisiert: ' + new Date().toLocaleTimeString('de-DE');
+                setSyncStatus('saved', 'Daten aktualisiert ✓');
+            } catch(e) { /* Netzwerkfehler beim Poll – still ignorieren */ }
+        }
+
+        function startPolling() {
+            if(_pollInterval) clearInterval(_pollInterval);
+            if(!githubToken) return;
+            _pollInterval = setInterval(_pollGitHub, 30000); // alle 30 Sekunden
         }
 
         // --- Beim Erstellen eines neuen Users: sofort eigene Datei anlegen ---
@@ -1012,7 +1049,7 @@
             } catch(e) {}
         }
         window.showGitHubTokenModal=function(){ document.getElementById('githubTokenInput').value=githubToken||''; document.getElementById('githubTokenModal').classList.add('active'); };
-        window.saveGitHubToken=async function(){ const token=document.getElementById('githubTokenInput').value.trim(); if(!token){ toast('Bitte Token eingeben','error'); return; } githubToken=token; localStorage.setItem('github_token',token); document.getElementById('githubStatusText').innerHTML='GitHub: Verbunden ✓'; toast('Token gespeichert – lade Daten…','info'); closeModal('githubTokenModal'); await loadAllFromGitHub(); };
+        window.saveGitHubToken=async function(){ const token=document.getElementById('githubTokenInput').value.trim(); if(!token){ toast('Bitte Token eingeben','error'); return; } githubToken=token; localStorage.setItem('github_token',token); document.getElementById('githubStatusText').innerHTML='GitHub: Verbunden ✓'; toast('Token gespeichert – lade Daten…','info'); closeModal('githubTokenModal'); await loadAllFromGitHub(); startPolling(); };
         function switchMainTab(tabId){ document.querySelectorAll('.main-tab-button').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.main-tab-content').forEach(c=>c.classList.remove('active')); document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active'); document.getElementById(`main-tab-${tabId}`)?.classList.add('active'); }
         function toggleTheme(){ const body=document.body; const icon=document.getElementById('themeIcon'); if(body.getAttribute('data-theme')==='light'){ body.setAttribute('data-theme','dark'); icon.className='fas fa-sun'; localStorage.setItem('theme','dark'); }else{ body.setAttribute('data-theme','light'); icon.className='fas fa-moon'; localStorage.setItem('theme','light'); } }
 
