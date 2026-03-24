@@ -254,7 +254,6 @@
         const USER_COLORS = { 1: 'user-tab-color-1', 2: 'user-tab-color-2', 3: 'user-tab-color-3', 4: 'user-tab-color-4', 5: 'user-tab-color-5', 6: 'user-tab-color-6', 7: 'user-tab-color-7' };
 
         // ==================== PMÜ DATEN (wochenweise / KW) ====================
-        // Struktur: { "0200_E1": [{year, week, value}], "0200_E2": [...], "Werk2_E1": [...], "Werk2_E2": [...] }
         let pmuData = {
             '0200_E1': [{ year: 2026, week: 12, value: 100 }, { year: 2026, week: 8, value: 70.8 }, { year: 2026, week: 4, value: 65.1 }, { year: 2025, week: 50, value: 17.4 }, { year: 2025, week: 46, value: 95.7 }, { year: 2025, week: 42, value: 84.8 }],
             '0200_E2': [{ year: 2026, week: 4, value: 99.5 }, { year: 2025, week: 50, value: 100 }, { year: 2025, week: 46, value: 100 }, { year: 2025, week: 42, value: 100 }],
@@ -268,6 +267,7 @@
         ];
 
         // ==================== DROPDOWN OPTIONEN ====================
+        // HINWEIS: Werden beim Start aus localStorage geladen (siehe init())
         let DROPDOWN_OPTIONS = {
             categories: ['Messmittel', 'Prüfanlage', 'Kalibrierung', 'MSA', 'MFU', 'Sonstiges'],
             inspectionMethods: ['Lehre', 'Messuhr', 'Rauheitsmessgerät', 'KMG', 'Härteprüfer', 'Ultraschall', 'Magnetpulver', 'Wirbelstrom', 'Sonstiges'],
@@ -425,10 +425,8 @@
             } else year = parseInt(year);
             let week = parseInt(document.getElementById('new-pmu-week').value);
             if(isNaN(week) || week < 1 || week > 53) { toast('Ungültige Kalenderwoche!', 'error'); return; }
-            // Prüfe ob KW bereits vollständig existiert (alle Bereiche haben Einträge)
             let alreadyFull = PMU_AREAS.every(area => (pmuData[area.id]||[]).some(e => e.year === year && e.week === week));
             if(alreadyFull) { toast(`KW ${week}/${year} existiert bereits!`, 'error'); return; }
-            // FIX: Tatsächlich Einträge hinzufügen (mit value=null als Platzhalter)
             PMU_AREAS.forEach(area => {
                 pmuData[area.id] = pmuData[area.id] || [];
                 if(!pmuData[area.id].some(e => e.year === year && e.week === week)) {
@@ -450,7 +448,7 @@
         function addAccident() { const date = document.getElementById('new-accident-date').value; const severity = document.getElementById('new-accident-severity').value; const description = document.getElementById('new-accident-desc').value.trim(); if(!date||!description){ toast('Bitte Datum und Beschreibung','error'); return; } safetyData.accidents.push({ id: genId(), date, severity, description }); saveSafetyData(); renderAccidentList(); document.getElementById('new-accident-date').value=''; document.getElementById('new-accident-desc').value=''; toast('Unfall erfasst'); }
         function deleteAccident(id) { safetyData.accidents = safetyData.accidents.filter(a=>a.id!==id); saveSafetyData(); renderAccidentList(); toast('Unfall gelöscht'); }
 
-        // ==================== AUDITS MIT ABWEICHUNGEN UND DETAILS ====================
+        // ==================== AUDITS ====================
         function loadAuditData() { const saved = localStorage.getItem('audit_data'); if(saved){ try{ auditData = JSON.parse(saved); }catch(e){} } updateAuditUI(); }
         function saveAuditData() { localStorage.setItem('audit_data', JSON.stringify(auditData)); updateAuditUI(); scheduleAutoSave(); closeModal('auditModal'); toast('Audits gespeichert'); }
         function updateAuditUI() {
@@ -546,12 +544,76 @@
         }
 
         // ==================== DROPDOWNS ADMIN ====================
-        function openDropdownAdminModal() { const container = document.getElementById('dropdownAdminBody'); let html = '<p><i class="fas fa-info-circle"></i> Dropdown-Optionen anpassen:</p>'; const fields = [{key:'categories',label:'Kategorien'},{key:'inspectionMethods',label:'Messmitteltypen'},{key:'processes',label:'Bereiche'},{key:'errorTypes',label:'Fehlerarten'},{key:'horizons',label:'Horizonte'},{key:'topicCategories',label:'Themen-Kategorien'}]; fields.forEach(f=>{ html += `<h3>${f.label}</h3><div class="dropdown-list" id="dd-${f.key}">`; DROPDOWN_OPTIONS[f.key].forEach((opt,idx)=>{ html += `<div class="dropdown-item"><input value="${escapeHtml(opt)}" onchange="updateOption('${f.key}',${idx},this.value)"><button onclick="deleteOption('${f.key}',${idx})"><i class="fas fa-trash"></i></button></div>`; }); html += `</div><div class="add-dropdown-item"><input id="new-${f.key}" placeholder="Neue Option"><button onclick="addOption('${f.key}')">+ Hinzufügen</button></div>`; }); container.innerHTML = html; document.getElementById('dropdownAdminModal').classList.add('active'); }
-        function updateOption(key,idx,val) { DROPDOWN_OPTIONS[key][idx]=val; saveDropdowns(); }
-        function deleteOption(key,idx) { DROPDOWN_OPTIONS[key].splice(idx,1); saveDropdowns(); openDropdownAdminModal(); }
-        function addOption(key) { const v = document.getElementById(`new-${key}`).value.trim(); if(v){ DROPDOWN_OPTIONS[key].push(v); saveDropdowns(); openDropdownAdminModal(); } }
-        function saveDropdowns() { localStorage.setItem('custom_dropdowns', JSON.stringify(DROPDOWN_OPTIONS)); refreshAllForms(); scheduleAutoSave(); toast('Dropdowns gespeichert'); }
-        function saveAllDropdowns() { saveDropdowns(); closeModal('dropdownAdminModal'); }
+        function openDropdownAdminModal() {
+            const container = document.getElementById('dropdownAdminBody');
+            let html = '<p style="margin-bottom:15px;"><i class="fas fa-info-circle"></i> Dropdown-Optionen anpassen – Änderungen werden dauerhaft gespeichert:</p>';
+            const fields = [
+                {key:'categories',label:'Kategorien'},
+                {key:'inspectionMethods',label:'Messmitteltypen'},
+                {key:'processes',label:'Bereiche'},
+                {key:'errorTypes',label:'Fehlerarten'},
+                {key:'horizons',label:'Horizonte'},
+                {key:'topicCategories',label:'Themen-Kategorien'}
+            ];
+            fields.forEach(f => {
+                html += `<h3 style="margin:15px 0 5px;">${f.label}</h3><div class="dropdown-list" id="dd-${f.key}">`;
+                DROPDOWN_OPTIONS[f.key].forEach((opt, idx) => {
+                    html += `<div class="dropdown-item">
+                        <input value="${escapeHtml(opt)}" onchange="updateOption('${f.key}',${idx},this.value)">
+                        <button onclick="deleteOption('${f.key}',${idx})"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                });
+                html += `</div><div class="add-dropdown-item">
+                    <input id="new-${f.key}" placeholder="Neue Option hinzufügen…">
+                    <button onclick="addOption('${f.key}')">+ Hinzufügen</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+            document.getElementById('dropdownAdminModal').classList.add('active');
+        }
+        function updateOption(key, idx, val) {
+            DROPDOWN_OPTIONS[key][idx] = val;
+            // Kein sofortiges saveDropdowns() bei jedem Tastendruck – nur bei explizitem Speichern
+        }
+        function deleteOption(key, idx) {
+            DROPDOWN_OPTIONS[key].splice(idx, 1);
+            saveDropdownsToStorage();
+            openDropdownAdminModal();
+            toast(`Option gelöscht`);
+        }
+        function addOption(key) {
+            const v = document.getElementById(`new-${key}`).value.trim();
+            if(v) {
+                DROPDOWN_OPTIONS[key].push(v);
+                saveDropdownsToStorage();
+                openDropdownAdminModal();
+                toast(`"${v}" hinzugefügt ✓`);
+            } else {
+                toast('Bitte einen Wert eingeben', 'error');
+            }
+        }
+        function saveDropdownsToStorage() {
+            localStorage.setItem('custom_dropdowns', JSON.stringify(DROPDOWN_OPTIONS));
+            refreshAllForms();
+            scheduleAutoSave();
+        }
+        function saveDropdowns() {
+            // Aktuelle Eingabewerte aus dem Modal auslesen bevor gespeichert wird
+            const fields = ['categories','inspectionMethods','processes','errorTypes','horizons','topicCategories'];
+            fields.forEach(key => {
+                const listDiv = document.getElementById(`dd-${key}`);
+                if(listDiv) {
+                    const inputs = listDiv.querySelectorAll('input');
+                    DROPDOWN_OPTIONS[key] = Array.from(inputs).map(inp => inp.value.trim()).filter(v => v !== '');
+                }
+            });
+            saveDropdownsToStorage();
+            toast('✅ Alle Dropdowns gespeichert');
+        }
+        function saveAllDropdowns() {
+            saveDropdowns();
+            closeModal('dropdownAdminModal');
+        }
 
         // ==================== BILD-UPLOAD ====================
         function setupImageUpload(formKey, existingImages = []) { imageStore[formKey] = [...existingImages]; const fileInput = document.getElementById(`${formKey}-images`); const previewDiv = document.getElementById(`${formKey}-preview`); if(!fileInput) return; function updatePreview(){ if(previewDiv){ previewDiv.innerHTML = imageStore[formKey].map((img,idx)=>`<div class="image-preview-item" onclick="showLightbox('${img}','Bild ${idx+1}')"><img src="${img}"><button class="remove-image" onclick="event.stopPropagation(); removeImage('${formKey}', ${idx})">&times;</button></div>`).join(''); } } fileInput.onchange = async function(){ for(let f of fileInput.files){ if(f.type.startsWith('image/')){ imageStore[formKey].push(await compressImage(f)); } } updatePreview(); fileInput.value=''; }; updatePreview(); }
@@ -559,7 +621,7 @@
         function getImages(formKey) { return imageStore[formKey] || []; }
         function compressImage(file) { return new Promise(resolve=>{ const reader=new FileReader(); reader.onload=e=>{ const img=new Image(); img.onload=()=>{ const canvas=document.createElement('canvas'); let w=img.width,h=img.height; const max=600; if(w>h && w>max){ h=h*max/w; w=max; }else if(h>max){ w=w*max/h; h=max; } canvas.width=w; canvas.height=h; canvas.getContext('2d').drawImage(img,0,0,w,h); resolve(canvas.toDataURL('image/jpeg',0.7)); }; img.src=e.target.result; }; reader.readAsDataURL(file); }); }
 
-        // ==================== GLOBALE VORFÄLLE & THEMEN (vereinfacht) ====================
+        // ==================== GLOBALE VORFÄLLE & THEMEN ====================
         function getCalendarWeek(dateStr) { const d=new Date(dateStr); d.setHours(0,0,0,0); d.setDate(d.getDate()+3-(d.getDay()+6)%7); const week1=new Date(d.getFullYear(),0,4); const wn=1+Math.round(((d-week1)/86400000-3+(week1.getDay()+6)%7)/7); return `KW ${wn} – ${d.getFullYear()}`; }
         function renderGlobalIncidents() { const container = document.getElementById('global-incidents'); if(!container) return; if(globalIncidents.length===0){ container.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><p>Keine Vorfälle</p></div>'; document.getElementById('globalIncidentCount').innerText='0'; return; } const groups={}; [...globalIncidents].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).forEach(inc=>{ const kw=getCalendarWeek(inc.created_at); if(!groups[kw]) groups[kw]=[]; groups[kw].push(inc); }); let html=''; Object.entries(groups).forEach(([kw,list])=>{ html+=`<div class="kw-group"><div class="kw-header"><i class="fas fa-calendar-week"></i> ${kw}<span class="kw-count">${list.length}</span></div><div class="incident-grid">`; list.forEach(inc=>{ const imgPreview = (inc.images && inc.images.length) ? `<img src="${inc.images[0]}" class="preview-image" onclick="event.stopPropagation();showLightbox('${inc.images[0]}', 'Vorfall')">` : `<div style="width:58px;height:58px;background:var(--hover-bg);border-radius:8px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image"></i></div>`; html+=`<div class="incident-card"><div class="card-header"><div class="card-badges"><span class="badge badge-category">${escapeHtml(inc.category)}</span><span class="badge badge-status ${inc.status==='closed'?'closed':''}">${inc.status==='closed'?'Geschlossen':'Offen'}</span></div><div class="card-date">${new Date(inc.created_at).toLocaleDateString()}</div></div><div class="card-content" onclick="viewIncidentDetail('${inc.id}')"><div class="info-row"><span class="info-value">${escapeHtml((inc.problem_description||'').substring(0,100))}</span></div><div class="card-preview">${imgPreview}</div></div><div class="card-actions"><button class="action-button edit" onclick="editIncident('${inc.id}')">Bearb.</button>${inc.status==='closed'?`<button class="action-button reopen" onclick="reopenGlobalIncident('${inc.id}')">Wieder öffnen</button>`:`<button class="action-button close" onclick="closeGlobalIncident('${inc.id}')">Fertig</button>`}<button class="action-button delete" onclick="deleteGlobalIncident('${inc.id}')">Löschen</button></div></div>`; }); html+='</div></div>'; }); container.innerHTML=html; document.getElementById('globalIncidentCount').innerText=globalIncidents.length; }
         function renderGlobalTopics() { const container = document.getElementById('global-topics'); if(!container) return; const filtered = globalTopics.filter(t => { if(topicFilter === 'open') return t.status !== 'closed'; if(topicFilter === 'closed') return t.status === 'closed'; return true; }); if(filtered.length===0){ container.innerHTML=`<div class="filter-bar"><button class="filter-btn ${topicFilter==='all'?'active':''}" onclick="setTopicFilter('all')">Alle</button><button class="filter-btn ${topicFilter==='open'?'active':''}" onclick="setTopicFilter('open')">Offen</button><button class="filter-btn ${topicFilter==='closed'?'active':''}" onclick="setTopicFilter('closed')">Erledigt</button></div><div class="empty-state"><i class="fas fa-folder-open"></i><p>Keine Themen</p></div>`; document.getElementById('globalTopicCount').innerText=globalTopics.length; return; } let html = `<div class="filter-bar"><button class="filter-btn ${topicFilter==='all'?'active':''}" onclick="setTopicFilter('all')">Alle (${globalTopics.length})</button><button class="filter-btn ${topicFilter==='open'?'active':''}" onclick="setTopicFilter('open')">Offen (${globalTopics.filter(t=>t.status!=='closed').length})</button><button class="filter-btn ${topicFilter==='closed'?'active':''}" onclick="setTopicFilter('closed')">Erledigt (${globalTopics.filter(t=>t.status==='closed').length})</button></div><div class="incident-grid">`; filtered.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).forEach(t=>{ const progress=parseInt(t.progress)||0; const smiley=progress===0?'😢':progress<=25?'🙁':progress<=50?'😐':progress<=75?'🙂':'😁'; const imgPreview=(t.images&&t.images.length)?`<img src="${t.images[0]}" class="preview-image" onclick="event.stopPropagation();showLightbox('${t.images[0]}','Thema')">`:`<div style="width:58px;height:58px;background:var(--hover-bg);border-radius:8px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image"></i></div>`; html+=`<div class="incident-card"><div class="card-header"><div class="card-badges"><span class="badge ${t.horizon==='langfristig'?'badge-long':(t.horizon==='kurzfristig'?'badge-short':'badge-audit')}">${t.horizon==='langfristig'?'Langfristig':(t.horizon==='kurzfristig'?'Kurzfristig':'Audit')}</span><span class="badge badge-category">${escapeHtml(t.category)}</span><span class="badge badge-status ${t.status==='closed'?'closed':''}">${t.status==='closed'?'Geschlossen':'Offen'}</span><span class="badge">${smiley} ${progress}%</span></div>${t.start_date||t.target_date?`<div class="card-badges">${t.start_date?`<span class="badge badge-date"><i class="fas fa-play"></i> Start: ${new Date(t.start_date).toLocaleDateString('de-DE')}</span>`:''}${t.target_date?`<span class="badge badge-date"><i class="fas fa-flag-checkered"></i> Ziel: ${new Date(t.target_date).toLocaleDateString('de-DE')}</span>`:''}</div>`:''}</div><div class="card-content"><div class="info-row"><span class="info-label">Titel:</span><span class="info-value">${escapeHtml(t.title)}</span></div><div class="info-row"><span class="info-value">${escapeHtml((t.description||'').substring(0,80))}</span></div><div class="card-preview">${imgPreview}</div></div><div class="card-actions"><button class="action-button edit" onclick="editTopic('${t.id}', true)">Bearb.</button>${t.status==='closed'?`<button class="action-button reopen" onclick="reopenGlobalTopic('${t.id}')">Wieder öffnen</button>`:`<button class="action-button close" onclick="closeGlobalTopic('${t.id}')">Fertig</button>`}<button class="action-button delete" onclick="deleteGlobalTopic('${t.id}')">Löschen</button></div></div>`; }); html+='</div>'; container.innerHTML=html; document.getElementById('globalTopicCount').innerText=globalTopics.length; }
@@ -622,7 +684,48 @@
         window.saveGitHubToken=async function(){ const token=document.getElementById('githubTokenInput').value.trim(); if(!token){ toast('Bitte Token','error'); return; } githubToken=token; localStorage.setItem('github_token',token); document.getElementById('githubStatusText').innerHTML='GitHub: Verbunden ✓'; toast('Token gespeichert','info'); closeModal('githubTokenModal'); await loadFromGitHub(false); };
         function switchMainTab(tabId){ document.querySelectorAll('.main-tab-button').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.main-tab-content').forEach(c=>c.classList.remove('active')); document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active'); document.getElementById(`main-tab-${tabId}`)?.classList.add('active'); }
         function toggleTheme(){ const body=document.body; const icon=document.getElementById('themeIcon'); if(body.getAttribute('data-theme')==='light'){ body.setAttribute('data-theme','dark'); icon.className='fas fa-sun'; localStorage.setItem('theme','dark'); }else{ body.setAttribute('data-theme','light'); icon.className='fas fa-moon'; localStorage.setItem('theme','light'); } }
-        async function init(){ if(localStorage.getItem('theme')==='dark') toggleTheme(); loadPMUData(); loadSafetyData(); loadAuditData(); try{ const si=localStorage.getItem('zfp_global_incidents'); if(si) globalIncidents=JSON.parse(si); const st=localStorage.getItem('zfp_global_topics'); if(st) globalTopics=JSON.parse(st); const su=localStorage.getItem('zfp_users'); if(su){ const users=JSON.parse(su); users.forEach(u=>{ userTabs.push(u); addUserTabButton(u); }); document.getElementById('userCountStatus').innerText=userTabs.length; } }catch(e){} renderGlobalIncidents(); renderGlobalTopics(); renderNewIncidentForm(); renderNewTopicForm(); if(githubToken){ document.getElementById('githubStatusText').innerHTML='GitHub: Verbunden ✓'; setSyncStatus('loading','Lade Daten…'); await loadFromGitHub(false); }else{ setSyncStatus('','Kein GitHub-Token – nur lokal'); } }
+
+        // ==================== INIT (MIT DROPDOWN-FIX) ====================
+        async function init(){
+            // ✅ FIX: Gespeicherte Dropdown-Optionen aus localStorage laden
+            // VORHER fehlte dieser Block – Änderungen gingen nach Reload verloren!
+            const savedDropdowns = localStorage.getItem('custom_dropdowns');
+            if(savedDropdowns){
+                try {
+                    const parsed = JSON.parse(savedDropdowns);
+                    // Nur bekannte Schlüssel übernehmen, um Datencorruption zu vermeiden
+                    Object.keys(DROPDOWN_OPTIONS).forEach(key => {
+                        if(parsed[key] && Array.isArray(parsed[key]) && parsed[key].length > 0){
+                            DROPDOWN_OPTIONS[key] = parsed[key];
+                        }
+                    });
+                } catch(e) {
+                    console.warn('Dropdown-Daten konnten nicht geladen werden:', e);
+                }
+            }
+
+            if(localStorage.getItem('theme')==='dark') toggleTheme();
+            loadPMUData(); loadSafetyData(); loadAuditData();
+            try{
+                const si=localStorage.getItem('zfp_global_incidents');
+                if(si) globalIncidents=JSON.parse(si);
+                const st=localStorage.getItem('zfp_global_topics');
+                if(st) globalTopics=JSON.parse(st);
+                const su=localStorage.getItem('zfp_users');
+                if(su){ const users=JSON.parse(su); users.forEach(u=>{ userTabs.push(u); addUserTabButton(u); }); document.getElementById('userCountStatus').innerText=userTabs.length; }
+            }catch(e){}
+            renderGlobalIncidents();
+            renderGlobalTopics();
+            renderNewIncidentForm();
+            renderNewTopicForm();
+            if(githubToken){
+                document.getElementById('githubStatusText').innerHTML='GitHub: Verbunden ✓';
+                setSyncStatus('loading','Lade Daten…');
+                await loadFromGitHub(false);
+            }else{
+                setSyncStatus('','Kein GitHub-Token – nur lokal');
+            }
+        }
         init();
     </script>
 </body>
