@@ -230,6 +230,120 @@
         "week": 13,
         "value": 100
       }
+    ],
+    "Werk1_E1": [
+      {
+        "year": 2026,
+        "week": 13,
+        "value": 77.8
+      },
+      {
+        "year": 2026,
+        "week": 12,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 11,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 10,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 8,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 7,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 6,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 5,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 4,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 3,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 2,
+        "value": null
+      }
+    ],
+    "Werk1_E2": [
+      {
+        "year": 2026,
+        "week": 13,
+        "value": 100
+      },
+      {
+        "year": 2026,
+        "week": 12,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 11,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 10,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 8,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 7,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 6,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 5,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 4,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 3,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 2,
+        "value": null
+      }
     ]
   },
   "safetyData": {
@@ -249,5 +363,5 @@
     ],
     "completed": []
   },
-  "lastUpdated": "2026-03-25T22:02:10.939Z"
+  "lastUpdated": "2026-03-25T22:07:47.174Z"
 }
