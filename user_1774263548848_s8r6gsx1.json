@@ -108,7 +108,7 @@
       "inspection_method": "Wirbelstrom",
       "start_date": "2025-11-03",
       "target_date": "2026-07-31",
-      "progress": 0,
+      "progress": 60,
       "description": "• Seigerungen führen zu Scheinanzeigen\n• ET Prüfung wird massiv beeinflusst",
       "measures": "• KI Projekt durch die Zentrale wurde abgebrochen. Erfolgschancen haben sich nicht erfüllt.\n• Konventionelle Lösung mit optimierter Prüftechnik (Absolut + Differenzsonde gleichzeitig) & einer speziellen Auswertesoftware.\n• Phase 1: Ringe mit Seigerungen und natürlichen Fehlern sammeln. Vor Ort Meeting mit Rohman/N-Dect/Schaeffler Regeltermin Team Rohman/N-Dect/Schaeffler Softwareprogramme werden von Rohmann umbestellt bzw. erstellt. Modell mit unseren Ringen beim Hersteller getestet Phase 1 abgeschlossen (27.02.26)\n• 2.Phase: Angebot kommt in der ersten März Woche -> Versuche auf 2 Anlagen im Werk (1x Segment 11, 1x Segment 6)\n• 3.Phase: Software auf alle Anlagen ausrollen",
       "images": [
@@ -117,5 +117,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-03-25T12:22:25.656Z"
+  "lastUpdated": "2026-03-25T12:22:35.764Z"
 }
