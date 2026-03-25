@@ -53,6 +53,11 @@
         "year": 2026,
         "week": 11,
         "value": null
+      },
+      {
+        "year": 2026,
+        "week": 13,
+        "value": null
       }
     ],
     "0200_E2": [
@@ -104,6 +109,11 @@
       {
         "year": 2026,
         "week": 12,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 13,
         "value": null
       }
     ],
@@ -157,6 +167,11 @@
         "year": 2026,
         "week": 11,
         "value": 27.2
+      },
+      {
+        "year": 2026,
+        "week": 13,
+        "value": null
       }
     ],
     "Werk2_E2": [
@@ -209,6 +224,11 @@
         "year": 2026,
         "week": 12,
         "value": 100
+      },
+      {
+        "year": 2026,
+        "week": 13,
+        "value": null
       }
     ]
   },
@@ -229,5 +249,5 @@
     ],
     "completed": []
   },
-  "lastUpdated": "2026-03-25T20:28:55.368Z"
+  "lastUpdated": "2026-03-25T20:28:57.977Z"
 }
