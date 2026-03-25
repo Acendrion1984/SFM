@@ -364,13 +364,15 @@
         let pmuData = {
             '0200_E1': [{ year: 2026, week: 12, value: 100 }, { year: 2026, week: 8, value: 70.8 }, { year: 2026, week: 4, value: 65.1 }, { year: 2025, week: 50, value: 17.4 }, { year: 2025, week: 46, value: 95.7 }, { year: 2025, week: 42, value: 84.8 }],
             '0200_E2': [{ year: 2026, week: 4, value: 99.5 }, { year: 2025, week: 50, value: 100 }, { year: 2025, week: 46, value: 100 }, { year: 2025, week: 42, value: 100 }],
+            'Werk1_E1': [],
+            'Werk1_E2': [],
             'Werk2_E1': [{ year: 2026, week: 12, value: 97.0 }, { year: 2026, week: 8, value: 92.3 }, { year: 2026, week: 4, value: 91.8 }, { year: 2025, week: 50, value: 93.7 }, { year: 2025, week: 46, value: 94.6 }, { year: 2025, week: 42, value: 88.1 }],
             'Werk2_E2': [{ year: 2026, week: 4, value: 100 }, { year: 2025, week: 50, value: 100 }, { year: 2025, week: 46, value: 100 }, { year: 2025, week: 42, value: 100 }]
         };
         const PMU_TARGET = 85;
         const PMU_TARGET_E2 = 100;
         function pmuIsGood(areaId, value) { if(typeof value !== 'number' || isNaN(value)) return false; return areaId && areaId.endsWith('_E2') ? value >= PMU_TARGET_E2 : value >= PMU_TARGET; }
-        const PMU_AREAS = [{ id: '0200_E1', name: '0200 E1' }, { id: '0200_E2', name: '0200 E2' }, { id: 'Werk2_E1', name: 'Werk 2 E1' }, { id: 'Werk2_E2', name: 'Werk 2 E2' }];
+        const PMU_AREAS = [{ id: '0200_E1', name: '0200 E1' }, { id: '0200_E2', name: '0200 E2' }, { id: 'Werk1_E1', name: 'Werk 1 E1' }, { id: 'Werk1_E2', name: 'Werk 1 E2' }, { id: 'Werk2_E1', name: 'Werk 2 E1' }, { id: 'Werk2_E2', name: 'Werk 2 E2' }];
 
         // ==================== DROPDOWNS ====================
         let DROPDOWN_OPTIONS = {
@@ -419,7 +421,7 @@
         function previewPMUColor(inp) { const val = inp.value.trim(); if(val === '') { inp.style.color = ''; inp.style.fontWeight = ''; return; } const num = parseFloat(val); if(!isNaN(num)) { const areaId = inp.dataset.area || ''; inp.style.color = pmuIsGood(areaId, num) ? 'var(--pmu-good)' : 'var(--pmu-bad)'; inp.style.fontWeight = 'bold'; } }
         function deletePMUWeek(year, week) { if(!confirm(`KW ${week}/${year} für alle Bereiche löschen?`)) return; readPMUFromDOM(); PMU_AREAS.forEach(area => { pmuData[area.id] = (pmuData[area.id] || []).filter(e => !(e.year === year && e.week === week)); }); savePMUData(); renderPMUTable(); toast(`KW ${week}/${year} gelöscht`); }
         function addNewPMUWeek() { let yearSelect = document.getElementById('new-pmu-year'); let year = yearSelect.value; if(year === 'neu') { let newYear = prompt('Neues Jahr eingeben:', new Date().getFullYear()); if(newYear && !isNaN(parseInt(newYear))) year = parseInt(newYear); else return; } else year = parseInt(year); let week = parseInt(document.getElementById('new-pmu-week').value); if(isNaN(week) || week < 1 || week > 53) { toast('Ungültige Kalenderwoche!', 'error'); return; } let alreadyFull = PMU_AREAS.every(area => (pmuData[area.id]||[]).some(e => e.year === year && e.week === week)); if(alreadyFull) { toast(`KW ${week}/${year} existiert bereits!`, 'error'); return; } PMU_AREAS.forEach(area => { pmuData[area.id] = pmuData[area.id] || []; if(!pmuData[area.id].some(e => e.year === year && e.week === week)) { pmuData[area.id].push({ year, week, value: null }); } }); savePMUData(); renderPMUTable(); toast(`✅ KW ${week}/${year} hinzugefügt – Werte eintragen!`); }
-        function saveAllPMUData() { savePMUData(); toast('✅ PMÜ-Daten gespeichert – Synchronisierung läuft…'); closeModal('pmuModal'); }
+        function saveAllPMUData() { readPMUFromDOM(); savePMUData(); toast('✅ PMÜ-Daten gespeichert – Synchronisierung läuft…'); closeModal('pmuModal'); }
 
         // ==================== ARBEITSSICHERHEIT ====================
         function loadSafetyData() { const saved = localStorage.getItem('safety_data'); if(saved){ try{ safetyData = JSON.parse(saved); }catch(e){} } updateSafetyUI(); }
