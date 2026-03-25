@@ -13,8 +13,8 @@
       "title": "Ausarbeitung der ZfP-Prüfstrategie für die 155 mm Variante",
       "horizon": "kurzfristig",
       "category": "Messmittelinvestition",
-      "process": "Sonstiges",
-      "inspection_method": "",
+      "process": "Segment 14",
+      "inspection_method": "Wirbelstrom",
       "start_date": "2025-11-01",
       "target_date": "2025-12-31",
       "progress": 100,
@@ -46,5 +46,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-03-25T01:48:48.798Z"
+  "lastUpdated": "2026-03-25T01:50:42.884Z"
 }
