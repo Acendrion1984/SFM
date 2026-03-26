@@ -109,7 +109,7 @@
       {
         "year": 2026,
         "week": 12,
-        "value": 0.3
+        "value": null
       },
       {
         "year": 2026,
@@ -363,5 +363,5 @@
     ],
     "completed": []
   },
-  "lastUpdated": "2026-03-26T00:52:09.339Z"
+  "lastUpdated": "2026-03-26T00:52:21.245Z"
 }
