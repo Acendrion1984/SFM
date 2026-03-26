@@ -48,11 +48,11 @@
       "id": "1774301295077_k7vx35vu",
       "created_at": "2026-03-23T21:28:15.077Z",
       "status": "open",
-      "title": "Umstellung von Ätzprüfung auf Wirbelstromprüfung im Bereich Rollenfertigung Perola < 320 mm",
+      "title": "Umstellung von Ätzprüfung auf Wirbelstromprüfung im Bereich Rollenfertigung",
       "horizon": "langfristig",
-      "category": "",
-      "process": "",
-      "inspection_method": "",
+      "category": "Messmittelinvestition",
+      "process": "Segment 12",
+      "inspection_method": "Wirbelstrom",
       "start_date": "2025-06-02",
       "target_date": "2026-04-30",
       "progress": 90,
@@ -134,5 +134,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-03-26T12:35:48.603Z"
+  "lastUpdated": "2026-03-26T12:36:57.824Z"
 }
