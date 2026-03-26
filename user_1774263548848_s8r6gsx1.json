@@ -86,7 +86,7 @@
       "status": "open",
       "title": "Wiederaufbau IBG Ringprüfer Wuppertal",
       "horizon": "kurzfristig",
-      "category": "ZfP",
+      "category": "ZfP Anlage",
       "process": "Segment 11",
       "inspection_method": "Wirbelstrom",
       "start_date": "2026-03-09",
@@ -134,5 +134,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-03-26T12:37:58.360Z"
+  "lastUpdated": "2026-03-26T12:38:07.689Z"
 }
