@@ -68,7 +68,7 @@
       "status": "open",
       "title": "Schleifbrandprüfung ET an Linearführung ermöglichen",
       "horizon": "kurzfristig",
-      "category": "ZfP",
+      "category": "ZfP Prüfung",
       "process": "Segment 6",
       "inspection_method": "Wirbelstrom",
       "start_date": "2026-02-25",
@@ -134,5 +134,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-03-26T12:36:57.824Z"
+  "lastUpdated": "2026-03-26T12:37:58.360Z"
 }
