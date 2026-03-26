@@ -102,8 +102,8 @@
       "status": "open",
       "title": "Schleifbrandprobleme Centerlessschleifen",
       "horizon": "langfristig",
-      "category": "ZfP",
-      "process": "",
+      "category": "ZfP Prüfung",
+      "process": "Segment 6",
       "inspection_method": "Wirbelstrom",
       "start_date": "2026-02-19",
       "target_date": "2026-05-31",
@@ -134,5 +134,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-03-26T12:38:16.139Z"
+  "lastUpdated": "2026-03-26T12:38:27.766Z"
 }
