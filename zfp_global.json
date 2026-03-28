@@ -58,6 +58,11 @@
         "year": 2026,
         "week": 13,
         "value": 85.9
+      },
+      {
+        "year": 2026,
+        "week": 14,
+        "value": null
       }
     ],
     "0200_E2": [
@@ -115,6 +120,11 @@
         "year": 2026,
         "week": 13,
         "value": 100
+      },
+      {
+        "year": 2026,
+        "week": 14,
+        "value": null
       }
     ],
     "Werk2_E1": [
@@ -172,6 +182,11 @@
         "year": 2026,
         "week": 13,
         "value": 90.7
+      },
+      {
+        "year": 2026,
+        "week": 14,
+        "value": null
       }
     ],
     "Werk2_E2": [
@@ -229,6 +244,11 @@
         "year": 2026,
         "week": 13,
         "value": 100
+      },
+      {
+        "year": 2026,
+        "week": 14,
+        "value": null
       }
     ],
     "Werk1_E1": [
@@ -285,6 +305,11 @@
       {
         "year": 2026,
         "week": 2,
+        "value": null
+      },
+      {
+        "year": 2026,
+        "week": 14,
         "value": null
       }
     ],
@@ -343,6 +368,11 @@
         "year": 2026,
         "week": 2,
         "value": null
+      },
+      {
+        "year": 2026,
+        "week": 14,
+        "value": null
       }
     ]
   },
@@ -363,5 +393,5 @@
     ],
     "completed": []
   },
-  "lastUpdated": "2026-03-26T14:57:33.776Z"
+  "lastUpdated": "2026-03-28T00:28:56.521Z"
 }
