@@ -107,7 +107,7 @@
       "inspection_method": "Wirbelstrom",
       "start_date": "2026-02-19",
       "target_date": "2026-05-31",
-      "progress": 50,
+      "progress": 65,
       "description": "• Schichtprüfungen durch Ätzen werden Aufgrund von zu wenig Personal nur zu 30% durchgeführt! Aktuell mehrere Fälle bei denen größere Mengen an Ringen n.i.O. sind!\n• Auftragsgrößen und Bearbeitungszeit gering daher oft größere Mengen mit Schleifbrandverdacht\n• Umstellung der Schichtprüfung auf Wirbelstromprüfung\n• Prüfung soll zukünftig durch die Bediener selbstständig durchgeführt werden.\n• Umsetzung für Segment 4 und 12",
       "measures": "• 1. Phase: Umstellung erster Typen auf Wirbelstromprüfung statt Ätzen (Kress/Häusner)\n• 2. Phase: Prüfparameter für alle Typen im Segment 4 in einem Typenübergreifendem Programm! (Häusner)\n• 3. Phase: Übertragung Prüfparameter von Segment 4 zu Segment 12 (Häusner)\n• 4. Phase: Tool zur Programmerstellung für Centerless Schleifen & Seitenschleifen  \n• 5. Phase: Programme auf die Flexitest übertragen (Kress/Wacker)\n• 6. Phase: Schulungen der Mitarbeiter (Kress Markus/Wacker Alex)\n• 7. Phase: Übergangsphase: Prüfung mit 2 Verfahren (Ätzen & Wirbelstromprüfung) \n• 8. Phase: 100% der Schichtprüfung beim Centerless Schleifen in Segment 4 & 12 durch Wirbelstromprüfung ",
       "images": [
@@ -134,5 +134,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-03-26T12:38:27.766Z"
+  "lastUpdated": "2026-04-03T05:37:03.120Z"
 }
