@@ -58,16 +58,6 @@
         "year": 2026,
         "week": 13,
         "value": 85.9
-      },
-      {
-        "year": 2026,
-        "week": 15,
-        "value": null
-      },
-      {
-        "year": 2026,
-        "week": 14,
-        "value": null
       }
     ],
     "0200_E2": [
@@ -125,16 +115,6 @@
         "year": 2026,
         "week": 13,
         "value": 100
-      },
-      {
-        "year": 2026,
-        "week": 15,
-        "value": null
-      },
-      {
-        "year": 2026,
-        "week": 14,
-        "value": null
       }
     ],
     "Werk2_E1": [
@@ -192,16 +172,6 @@
         "year": 2026,
         "week": 13,
         "value": 91.1
-      },
-      {
-        "year": 2026,
-        "week": 15,
-        "value": null
-      },
-      {
-        "year": 2026,
-        "week": 14,
-        "value": null
       }
     ],
     "Werk2_E2": [
@@ -259,16 +229,6 @@
         "year": 2026,
         "week": 13,
         "value": 100
-      },
-      {
-        "year": 2026,
-        "week": 15,
-        "value": null
-      },
-      {
-        "year": 2026,
-        "week": 14,
-        "value": null
       }
     ],
     "Werk1_E1": [
@@ -325,16 +285,6 @@
       {
         "year": 2026,
         "week": 2,
-        "value": null
-      },
-      {
-        "year": 2026,
-        "week": 15,
-        "value": null
-      },
-      {
-        "year": 2026,
-        "week": 14,
         "value": null
       }
     ],
@@ -393,16 +343,6 @@
         "year": 2026,
         "week": 2,
         "value": null
-      },
-      {
-        "year": 2026,
-        "week": 15,
-        "value": null
-      },
-      {
-        "year": 2026,
-        "week": 14,
-        "value": null
       }
     ]
   },
@@ -423,5 +363,5 @@
     ],
     "completed": []
   },
-  "lastUpdated": "2026-04-10T23:56:47.785Z"
+  "lastUpdated": "2026-04-10T23:57:02.157Z"
 }
